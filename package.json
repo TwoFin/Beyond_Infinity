@@ -1,0 +1,11 @@
+{
+  "name": "pexpolicy_node_cjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.cjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jon Turner",
+  "license": "ISC"
+}

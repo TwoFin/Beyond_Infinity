@@ -37,8 +37,8 @@ const rankTop = ["Air Chief Marshal",
 class PexPolicy {
     // process service/configuration policy request 
     async service_config(query) {
-        // Log query params
-        console.log("Service query: ", query)
+        // Log query params DEBUG as noisy
+        // console.log("Service query: ", query)
 
         // Copy responses in local scope
         const pol_response = Object.assign({}, pol_continue);
@@ -54,8 +54,8 @@ class PexPolicy {
 
     // process participant/properties policy request 
     async participant_prop(query) {
-        // Log query params
-        console.log("Participant query: ", query)
+        // Log query params DEBUG as noisy
+        // console.log("Service query: ", query)
 
         // Copy responses in local scope
         const pol_response = Object.assign({}, pol_continue);
@@ -121,7 +121,7 @@ class PexPolicy {
             else {
                 pol_response_reject.result.reject_reason = "ACCESS DENIED You are not in the " + tag_params[1]
                 console.log("Participants idp attribute does NOT match service_tag")
-                console.log("Participant policy done:", pol_response);
+                console.log("Participant policy done:", pol_response_reject);
                 return new Promise((resolve, _) => resolve(pol_response_reject))
             }
         }
