@@ -1,7 +1,7 @@
 //app.js
 const http = require('http');
 const url = require('url')
-const pexpol1 = require("./pexpolicy");
+const pexpol1 = require("./pexpolicy.cjs");
 
 const PORT = process.env.PORT || 5000;
 
@@ -9,8 +9,7 @@ const server = http.createServer(async (req, res) => {
 
     const pathname = url.parse(req.url).pathname;
     const query = url.parse(req.url, true).query;
-    console.log("Path: ", pathname);
-    console.log("Query: ", query);
+    console.log("Incoming reqeust - Path: : ", pathname);
 
     // Check there is query params
     if (Object.keys(query).length === 0) {
