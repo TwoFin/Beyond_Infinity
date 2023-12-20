@@ -38,8 +38,8 @@ const rankTop = ["Air Chief Marshal",
 class PexPolicy {
     // process service/configuration policy request 
     async service_config(query) {
-        // Log query params DEBUG as noisy
-        console.log("SERV_POL: query: ", query)
+        // Log query params - for DEBUG as noisy
+        // console.log("SERV_POL: query: ", query)
 
         // Copy responses in local scope
         const pol_response = Object.assign({}, pol_continue);
@@ -65,8 +65,8 @@ class PexPolicy {
 
     // process participant/properties policy request 
     async participant_prop(query) {
-        // Log query params DEBUG as noisy
-        console.log("PART_POL: query: ", query)
+        // Log query params - for DEBUG as noisy
+        // console.log("PART_POL: query: ", query)
 
         // Copy responses in local scope
         const pol_response = Object.assign({}, pol_continue);
@@ -78,7 +78,7 @@ class PexPolicy {
             return new Promise((resolve, _) => resolve(pol_response))
         }
 
-        // Build overlay text from IDP attr - TODO Functionlize and reduce double handling
+        // Build overlay text from IDP attr
         if (query.idp_attribute_jobtitle && query.idp_attribute_surname && query.idp_attribute_department){
             pol_response.result = {"remote_display_name": query.idp_attribute_jobtitle + " " + query.idp_attribute_surname + " | " + query.idp_attribute_department}
             console.log("PART_POL: Display name updated: ", pol_response.result.remote_display_name)
@@ -93,9 +93,11 @@ class PexPolicy {
 
         // All departments tag - continue based on VMR config - allows classification change based on idp_attribute_clearance
         if (tag_params[0] === "allDept") {
-            if(query.protocol)
-            console.log("PART_POL: Using ClientAPI to change VMR classification level to", query.idp_attribute_clearance)
-            new controlClass().lowerClass(query.service_name, query.idp_attribute_clearance)
+            // Only do ClientAPI call if protocol is API - prevents double handle
+            if(query.protocol === "api"){
+                console.log("PART_POL: Using ClientAPI to change VMR classification level to", query.idp_attribute_clearance)
+                new controlClass().lowerClass(query.service_name, query.idp_attribute_clearance)
+            }
             console.log("PART_POL: Participant policy done:", pol_response);
             return new Promise((resolve, _) => resolve(pol_response))
         }
