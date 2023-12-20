@@ -93,6 +93,7 @@ class PexPolicy {
 
         // All departments tag - continue based on VMR config - allows classification change based on idp_attribute_clearance
         if (tag_params[0] === "allDept") {
+            console.log("Using ClientAPI to change VMR classification level to", query.idp_attribute_clearance)
             new controlClass().lowerClass(query.service_name, query.idp_attribute_clearance)
             console.log("Participant policy done:", pol_response);
             return new Promise((resolve, _) => resolve(pol_response))
