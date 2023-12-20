@@ -6,9 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TwoFin/PexPolicy_node_cjs.git"
+  },
   "author": "Jon Turner",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TwoFin/PexPolicy_node_cjs/issues"
+  },
+  "homepage": "https://github.com/TwoFin/PexPolicy_node_cjs#readme",
   "dependencies": {
-    "node-fetch": "file:.2.6.7"
+    "node-fetch": "^2.6.7"
   }
 }
