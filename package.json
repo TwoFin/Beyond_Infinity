@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jon Turner",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "file:.2.6.7"
+  }
 }

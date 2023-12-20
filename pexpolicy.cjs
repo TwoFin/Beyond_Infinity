@@ -2,6 +2,7 @@
 // Process Pexip Infinity external policy requests
 
 // pexClientApi require/import here ###
+const controlClass = require("./pexClientAPI.cjs");
 
 // default policy responses
 const pol_reject = {
@@ -38,30 +39,44 @@ class PexPolicy {
     // process service/configuration policy request 
     async service_config(query) {
         // Log query params DEBUG as noisy
-        // console.log("Service query: ", query)
+        console.log("Service query: ", query)
 
         // Copy responses in local scope
         const pol_response = Object.assign({}, pol_continue);
+        
+        // MeetBot bypass
+        if (query.remote_alias === "MeetBot" && query.call_tag === "secret123" ){ // TODO Externalize secret
+            pol_response.result = {
+                "name": query.local_alias,
+                "service_tag": "allDept",
+                "service_type": "conference",
+                "host_identity_provider_group":""
+            }
+            console.log("SERV_POL: MEETBOT bypassing service with no IDP", pol_response)
+            return new Promise((resolve, _) => resolve(pol_response))
+        }
 
-        // MeetBot bypass ###
         // Default response
-        //else{ ###
+        else{
             console.log("SERV_POL: No changes:", pol_response);
             return new Promise((resolve, _) => resolve(pol_response))
-        //} ###
-    
+        }
     }
 
     // process participant/properties policy request 
     async participant_prop(query) {
         // Log query params DEBUG as noisy
-        // console.log("Service query: ", query)
+        console.log("Service query: ", query)
 
         // Copy responses in local scope
         const pol_response = Object.assign({}, pol_continue);
         const pol_response_reject = Object.assign({}, pol_reject_msg);
 
         // MeetBot bypass
+        if (query.remote_alias === "MeetBot" && query.call_tag === "secret123" ){ // TODO Externalise secret
+            console.log("MEETBOT bypassing partipant policy")
+            return new Promise((resolve, _) => resolve(pol_response))
+        }
 
         // Build overlay text from IDP attr - TODO Functionlize and reduce double handling
         if (query.idp_attribute_jobtitle && query.idp_attribute_surname && query.idp_attribute_department){
@@ -78,7 +93,7 @@ class PexPolicy {
 
         // All departments tag - continue based on VMR config - allows classification change based on idp_attribute_clearance
         if (tag_params[0] === "allDept") {
-            const pol_response = Object.assign({}, pol_continue);
+            new controlClass().lowerClass(query.service_name, query.idp_attribute_clearance)
             console.log("Participant policy done:", pol_response);
             return new Promise((resolve, _) => resolve(pol_response))
         }
