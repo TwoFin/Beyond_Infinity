@@ -61,7 +61,7 @@ class PexPolicy {
   // process participant/properties policy request
   async participant_prop(query) {
     // Log query params - for DEBUG as noisy
-    // console.log("PART_POL: query: ", query)
+    console.log("PART_POL: query: ", query)
 
     // Copy responses in local scope
     const pol_response = Object.assign({}, pol_continue);
