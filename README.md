@@ -42,5 +42,8 @@ Top Rank:
 Client API setting are loaded from enviroment variables to enable setting up for different Infinty enviroments:
 
 PEXIP_NODE - Conference node to send ClientAPI requests
+
 PEXIP_CLIENTAPI_TAG - call_tag to use for security
+
 PEXIP_CLIENTAPI_NAME - display name to use, also checked for security
+
