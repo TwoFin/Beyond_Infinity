@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 5000;
 
 const server = http.createServer(async (req, res) => {
 
+    console.log(req.headers)
     const pathname = url.parse(req.url).pathname;
     const query = url.parse(req.url, true).query;
     console.log("Incoming reqeust - Path: : ", pathname);
