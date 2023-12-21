@@ -4,14 +4,6 @@ const pexnode = process.env.PEXIP_NODE;
 const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
 
-const level_map = {
-  0: "UNOFFICIAL",
-  1: "OFFICIAL",
-  2: "PROTECTED",
-  3: "SECRET",
-  4: "TOP SECRET",
-};
-
 const pexnodeapi = "https://" + pexnode + "/api/client/v2/conferences/";
 
 class controlClass {
@@ -29,18 +21,7 @@ class controlClass {
     console.log("CLIENT_API:", response.status);
     var thistoken = data.result.token;
 
-    // Reverse look up new participant classification level from level_map
-    var new_level = Number(
-      Object.keys(level_map).find((e) => level_map[e] == level)
-    );
-    console.log(
-      "CLIENT_API: New participant security level is: ",
-      level,
-      "=",
-      new_level
-    );
-
-    // Get current vmr classification level
+    // Get vmr classification levels and current level
     var url = pexnodeapi + vmr + "/get_classification_level";
     console.log("CLIENT_API:", url);
     var response = await fetch(url, {
@@ -48,7 +29,20 @@ class controlClass {
     });
     var data = await response.json();
     var current_level = data.result.current;
+    var level_map = data.result.levels;
+    console.log("CLIENT_API: Availible security level are: ", level_map);
     console.log("CLIENT_API: Current security level is: ", current_level);
+
+    // Reverse look up new participant classification level from level_map
+    var new_level = Number(
+      Object.keys(level_map).find((e) => level_map[e] == level)
+    );
+    console.log(
+      "CLIENT_API: New participant security level is: ",
+      new_level,
+      ":",
+      level
+    );
 
     // Lower clissifiction level if new participant has lower class
     if (new_level < current_level) {
