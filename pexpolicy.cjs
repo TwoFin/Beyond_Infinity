@@ -4,6 +4,8 @@
 // pexClientApi require/import here ###
 const controlClass = require("./pexClientAPI.cjs");
 
+const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
+
 // default policy responses
 const pol_reject = {
     "status": "success",
@@ -45,7 +47,7 @@ class PexPolicy {
         const pol_response = Object.assign({}, pol_continue);
         
         // MeetBot bypass
-        if (query.remote_alias === "MeetBot" && query.call_tag === "secret123" ){ // TODO Externalize secret
+        if (query.remote_alias === "MeetBot" && query.call_tag === clientapi_tag ){
             pol_response.result = {
                 "name": query.local_alias,
                 "service_tag": "allDept",
@@ -73,7 +75,7 @@ class PexPolicy {
         const pol_response_reject = Object.assign({}, pol_reject_msg);
 
         // MeetBot bypass
-        if (query.remote_alias === "MeetBot" && query.call_tag === "secret123" ){ // TODO Externalise secret
+        if (query.remote_alias === "MeetBot" && query.call_tag === clientapi_tag ){
             console.log("PART_POL: MEETBOT bypassing partipant policy")
             return new Promise((resolve, _) => resolve(pol_response))
         }

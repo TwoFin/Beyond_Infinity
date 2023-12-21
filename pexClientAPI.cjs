@@ -1,20 +1,24 @@
 const fetch = require('node-fetch');
 
+const pexnode = process.env.PEXIP_NODE;
+const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
+const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
+
 const level_map = {
     "0": "UNOFFICIAL",
     "1": "OFFICIAL",
     "2": "PROTECTED",
     "3": "SECRET",
     "4": "TOP SECRET"
-}
+};
 
-const pexnodeapi = "https://sip.twofin.net/api/client/v2/conferences/" // TODO Externalise
+const pexnodeapi = "https://" + pexnode + "/api/client/v2/conferences/"
 
 class controlClass {
     async lowerClass(vmr, level) {
         // Obtain token
         var url = pexnodeapi + vmr + "/request_token"
-        var json = { "display_name": "MeetBot", "call_tag": "secret123" } // TODO Externalise secret
+        var json = { "display_name": clientapi_name, "call_tag": clientapi_tag }
         console.log("CLIENT_API:",url)
         var response = await fetch(url, {
             method: 'post',
