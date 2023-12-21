@@ -19,6 +19,7 @@ Other examples of VMR tags:
 4. Any other calls, i.e.: no service tag, are allowed to continue to prevent failures in demo environment. In production this would likely be set to reject call.
 
 Current list entries from pexpolicyConfig.json file:
+
 IDP attributes: ["department", "jobtitle", "givenname", "surname"]
 
 CO Rank: 
@@ -39,6 +40,7 @@ Top Rank:
 ]
 
 Client API setting are loaded from enviroment variables to enable setting up for different Infinty enviroments:
+
 PEXIP_NODE - Conference node to send ClientAPI requests
 PEXIP_CLIENTAPI_TAG - call_tag to use for security
 PEXIP_CLIENTAPI_NAME - display name to use, also checked for security
