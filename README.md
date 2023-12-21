@@ -1,4 +1,4 @@
-External Infinity policy Server that uses VMR service tags and IDP attributes to allow or refuse entry to the VMR.
+# External Infinity policy Server that uses VMR service tags and IDP attributes to allow or refuse entry to the VMR.
 
 Service tags are first deiminated by underscore '_' to produce two variables i.e.:
 "department_Airforce" is separated into two variables:
@@ -18,7 +18,7 @@ Other examples of VMR tags:
 
 4. Any other calls, i.e.: no service tag, are allowed to continue to prevent failures in demo environment. In production this would likely be set to reject call.
 
-Current list entries from pexpolicyConfig.json file:
+## Current list entries from pexpolicyConfig.json file:
 
 IDP attributes: ["department", "jobtitle", "givenname", "surname"]
 
@@ -39,7 +39,7 @@ Top Rank:
     "Admiral"
 ]
 
-Client API setting are loaded from enviroment variables to enable setting up for different Infinty enviroments:
+## Client API setting are loaded from enviroment variables to enable setting up for different Infinty enviroments:
 
 PEXIP_NODE - Conference node to send ClientAPI requests
 
