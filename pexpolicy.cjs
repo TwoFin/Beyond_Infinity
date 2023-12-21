@@ -1,10 +1,16 @@
-// pexpolicy.js
+// pexpolicy.cjs
 // Process Pexip Infinity external policy requests
 
-// pexClientApi require/import here ###
+// pexClientApi import and tag
 const controlClass = require("./pexClientAPI.cjs");
-
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
+
+// configuration file
+const pexpolicyConfig = require("./pexpolicyConfig.json")
+// Set lists for IDP processing from configuration file
+const idpAttrs = pexpolicyConfig.idpAttrs;
+const rankTop = pexpolicyConfig.rankTop;
+const rankCo = pexpolicyConfig.rankCo;
 
 // default policy responses
 const pol_reject = {
@@ -21,21 +27,6 @@ const pol_continue = {
     "action": "continue"
 }
 
-// Set lists for IDP processing - TODO externalize
-const idpAttrs = ["department", "jobtitle", "givenname", "surname"]
-const rankCo = ["Air Chief Marshal",
-    "General",
-    "Admiral",
-    "Colonel",
-    "Captain",
-    "Squadron Leader",
-    "Major",
-    "Lieutenant"
-]
-const rankTop = ["Air Chief Marshal",
-    "General",
-    "Admiral"
-]
 
 class PexPolicy {
     // process service/configuration policy request 

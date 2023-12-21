@@ -1,0 +1,15 @@
+{
+    "idpAttrs": ["department", "jobtitle", "givenname", "surname"],
+
+    "rankTop": ["Air Chief Marshal","General","Admiral"],
+
+    "rankCo": ["Air Chief Marshal",    
+    "General", 
+        "Admiral",
+        "Colonel",
+        "Captain",
+        "Squadron Leader",
+        "Major",
+        "Lieutenant"
+    ]
+}
