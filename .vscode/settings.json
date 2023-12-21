@@ -1,4 +1,0 @@
-{
-    "appService.defaultWebAppToDeploy": "/subscriptions/731376a6-6896-4e1f-a1cd-408822bd812f/resourceGroups/AU-Demo-Apps/providers/Microsoft.Web/sites/jontpexpolicyserv",
-    "appService.deploySubpath": "."
-}
