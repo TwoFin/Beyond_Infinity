@@ -1,9 +1,11 @@
 // pexpolicy.cjs
 // Process Pexip Infinity external policy requests
 
-// pexClientApi import and tag
-const controlClass = require("./pexClientAPI.cjs");
+// pexClientApi import and MeetBot setting;
+const clientAPI = require("./pexClientAPIv2.cjs");
+const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
+
 
 // configuration file
 const pexpolicyConfig = require("./pexpolicyConfig.json");
@@ -37,7 +39,7 @@ class PexPolicy {
     const pol_response = Object.assign({}, pol_continue);
 
     // MeetBot bypass
-    if (query.remote_alias === "MeetBot" && query.call_tag === clientapi_tag) {
+    if (query.remote_alias === clientapi_name && query.call_tag === clientapi_tag) {
       pol_response.result = {
         name: query.local_alias,
         service_tag: "allDept",
@@ -68,7 +70,7 @@ class PexPolicy {
     const pol_response_reject = Object.assign({}, pol_reject_msg);
 
     // MeetBot bypass
-    if (query.remote_alias === "MeetBot" && query.call_tag === clientapi_tag) {
+    if (query.remote_alias === clientapi_name && query.call_tag === clientapi_tag) {
       console.log("PART_POL: MEETBOT bypassing partipant policy");
       return new Promise((resolve, _) => resolve(pol_response));
     }
@@ -109,7 +111,8 @@ class PexPolicy {
           "PART_POL: Using ClientAPI to change VMR classification level to",
           query.idp_attribute_clearance
         );
-        new controlClass().lowerClass(
+        
+        clientAPI.lowerClassLevel(
           query.service_name,
           query.idp_attribute_clearance
         );
