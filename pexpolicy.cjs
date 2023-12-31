@@ -73,7 +73,9 @@ class PexPolicy {
     if (
       query.idp_attribute_jobtitle &&
       query.idp_attribute_surname &&
-      query.idp_attribute_department
+      query.idp_attribute_department &&
+      // Only do text change if protocol is API - prevents double handle
+      query.protocol === "api"
     ) {
       pol_response.result = {
         remote_display_name:
