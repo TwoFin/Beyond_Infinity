@@ -8,11 +8,11 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(async (req, res) => {
   const pathname = url.parse(req.url).pathname;
   const query = url.parse(req.url, true).query;
-  console.log("Incoming reqeust - Path: : ", pathname);
+  console.info("APP: Incoming reqeust - Path: : ", pathname);
 
   // Check there is query params
   if (Object.keys(query).length === 0) {
-    console.log("No request params, returning 400");
+    console.info("APP: No request params, returning 400");
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "No query params" }));
   } else {
@@ -33,7 +33,7 @@ const server = http.createServer(async (req, res) => {
     }
     // Invalid path
     else {
-      console.log("Invalid path: " + pathname);
+      console.info("APP: Invalid path: " + pathname);
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ message: "Not found" }));
     }
@@ -41,5 +41,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`server started on port: ${PORT}`);
+  console.info(`server started on port: ${PORT}`);
 });

@@ -32,9 +32,6 @@ const pol_continue = {
 class PexPolicy {
   // process service/configuration policy request
   async service_config(query) {
-    // Log query params - for DEBUG as noisy
-    // console.log("SERV_POL: query: ", query)
-
     // Copy responses in local scope
     const pol_response = Object.assign({}, pol_continue);
 
@@ -46,8 +43,8 @@ class PexPolicy {
         service_type: "conference",
         host_identity_provider_group: "",
       };
-      console.log(
-        "SERV_POL: MEETBOT bypassing service with no IDP",
+      console.info(
+        "PEXPOLICY: MEETBOT bypassing service with no IDP",
         pol_response
       );
       return new Promise((resolve, _) => resolve(pol_response));
@@ -55,23 +52,20 @@ class PexPolicy {
 
     // Default response
     else {
-      console.log("SERV_POL: No changes:", pol_response);
+      console.info("PEXPOLICY: No changes:", pol_response);
       return new Promise((resolve, _) => resolve(pol_response));
     }
   }
 
   // process participant/properties policy request
   async participant_prop(query) {
-    // Log query params - for DEBUG as noisy
-    // console.log("PART_POL: query: ", query)
-
     // Copy responses in local scope
     const pol_response = Object.assign({}, pol_continue);
     const pol_response_reject = Object.assign({}, pol_reject_msg);
 
     // MeetBot bypass
     if (query.remote_alias === clientapi_name && query.call_tag === clientapi_tag) {
-      console.log("PART_POL: MEETBOT bypassing partipant policy");
+      console.info("PEXPOLICY: MEETBOT bypassing partipant policy");
       return new Promise((resolve, _) => resolve(pol_response));
     }
 
@@ -89,26 +83,26 @@ class PexPolicy {
           " | " +
           query.idp_attribute_department,
       };
-      console.log(
-        "PART_POL: Display name updated: ",
+      console.info(
+        "PEXPOLICY: Display name updated: ",
         pol_response.result.remote_display_name
       );
     } else {
-      console.log(
-        "PART_POL: Not enough IDP attributes to build overlay text name, default will be used"
+      console.info(
+        "PEXPOLICY: Not enough IDP attributes to build overlay text name, default will be used"
       );
     }
 
     // Extract params from service_tag
     const tag_params = query.service_tag.split("_");
-    console.log("PART_POL: service_tag parmameters: ", tag_params);
+    console.info("PEXPOLICY: service_tag parmameters: ", tag_params);
 
     // All departments tag - continue based on VMR config - allows classification change based on idp_attribute_clearance
     if (tag_params[0] === "allDept") {
       // Only do ClientAPI call if protocol is API - prevents double handle
       if (query.protocol === "api") {
-        console.log(
-          "PART_POL: Using ClientAPI to change VMR classification level to",
+        console.info(
+          "PEXPOLICY: Using ClientAPI to change VMR classification level to",
           query.idp_attribute_clearance
         );
         
@@ -117,7 +111,7 @@ class PexPolicy {
           query.idp_attribute_clearance
         );
       }
-      console.log("PART_POL: Participant policy done:", pol_response);
+      console.info("PEXPOLICY: Participant policy done:", pol_response);
       return new Promise((resolve, _) => resolve(pol_response));
     }
 
@@ -128,22 +122,22 @@ class PexPolicy {
         rankCo.includes(query.idp_attribute_jobtitle)
       ) {
         // CO Memeber
-        console.log("PART_POL: Participants idp jobtitle is on CO list OK");
-        console.log("PART_POL: Participant policy done:", pol_response);
+        console.info("PEXPOLICY: Participants idp jobtitle is on CO list OK");
+        console.info("PEXPOLICY: Participant policy done:", pol_response);
         return new Promise((resolve, _) => resolve(pol_response));
       } else if (
         tag_params[1] === "top" &&
         rankTop.includes(query.idp_attribute_jobtitle)
       ) {
         // Top Member
-        console.log("PART_POL: Participants idp jobtitle is on TOP list OK");
-        console.log("PART_POL: Participant policy done:", pol_response);
+        console.info("PEXPOLICY: Participants idp jobtitle is on TOP list OK");
+        console.info("PEXPOLICY: Participant policy done:", pol_response);
         return new Promise((resolve, _) => resolve(pol_response));
       } else {
         pol_response_reject.result.reject_reason =
           "ACCESS DENIED You do not have the required rank";
-        console.log("PART_POL: Participants idp jobtitle NOT in any rank list");
-        console.log("PART_POL: Participant policy done:", pol_response_reject);
+        console.info("PEXPOLICY: Participants idp jobtitle NOT in any rank list");
+        console.info("PEXPOLICY: Participant policy done:", pol_response_reject);
         return new Promise((resolve, _) => resolve(pol_response_reject));
       }
     }
@@ -155,10 +149,10 @@ class PexPolicy {
 
       // Admit participant if idp attribute matches 2nd tag parameter
       if (query[idpCheckAttr] === tag_params[1]) {
-        console.log(
-          "PART_POL: Participants idp attribute matches service_tag OK"
+        console.info(
+          "PEXPOLICY: Participants idp attribute matches service_tag OK"
         );
-        console.log("PART_POL: Participant policy done:", pol_response);
+        console.info("PEXPOLICY: Participant policy done:", pol_response);
         return new Promise((resolve, _) => resolve(pol_response));
       }
 
@@ -166,18 +160,18 @@ class PexPolicy {
       else {
         pol_response_reject.result.reject_reason =
           "ACCESS DENIED You are not in the " + tag_params[1];
-        console.log(
-          "PART_POL: Participants idp attribute does NOT match service_tag"
+        console.info(
+          "PEXPOLICY: Participants idp attribute does NOT match service_tag"
         );
-        console.log("PART_POL: Participant policy done:", pol_response_reject);
+        console.info("PEXPOLICY: Participant policy done:", pol_response_reject);
         return new Promise((resolve, _) => resolve(pol_response_reject));
       }
     }
 
     // Default response
     else {
-      console.log(
-        "PART_POL: Participant policy done, default response:",
+      console.info(
+        "PEXPOLICY: Participant policy done, default response:",
         pol_response
       );
       return new Promise((resolve, _) => resolve(pol_response));

@@ -48,55 +48,54 @@ async function changeClassLevel(vmr, token, level){
 
 async function setClassLevel(vmr, classification){
   try {
-    console.info("New classificaton:", classification)
+    console.info("PEXCLIENTAPI: New classificaton:", classification)
     var token = await newToken(vmr);
     var data = await vmrGet(vmr,token, "/get_classification_level")
     var currentLevel = data.result.current;
     var levelMap = data.result.levels;
-    console.info("VMR Current classification level:",currentLevel, "- Availible levels:", levelMap)
+    console.info("PEXCLIENTAPI: VMR Current classification level:",currentLevel, "- Availible levels:", levelMap)
     var newLevel = Number(
       Object.keys(levelMap).find((e) => levelMap[e] == classification)
     );
     if(newLevel){
       var data = await changeClassLevel(vmr, token, newLevel)
-      console.info("Set classification level to:", newLevel, data)
+      console.info("PEXCLIENTAPI: Set classification level to:", newLevel, data)
     } else {
-      console.warn("Classification does not match VMR levelMap")
+      console.warn("PEXCLIENTAPI: Classification does not match VMR levelMap")
     }     
     var releaseResult = await releaseToken(vmr, token)
-    console.info("Released token:", releaseResult)
+    console.info("PEXCLIENTAPI: Released token:", releaseResult)
   } catch (error) {
-    console.error(error)    
+    console.error("PEXCLIENTAPI:", error)    
   }
 }
 
 async function lowerClassLevel(vmr, classification){
   try {
-    console.info("New classificaton:", classification)
+    console.info("PEXCLIENTAPI: New classificaton:", classification)
     var token = await newToken(vmr);
     var data = await vmrGet(vmr,token, "/get_classification_level")
     var currentLevel = data.result.current;
     var levelMap = data.result.levels;
-    console.info("VMR Current classification level:",currentLevel, "- Availible levels:", levelMap)
+    console.info("PEXCLIENTAPI: VMR Current classification level:",currentLevel, "- Availible levels:", levelMap)
     var newLevel = Number(
       Object.keys(levelMap).find((e) => levelMap[e] == classification)
     );
     if(newLevel){
       if (newLevel < currentLevel) {
         var data = await changeClassLevel(vmr, token, newLevel)
-        console.info("Set classification level to:", newLevel, data)
+        console.info("PEXCLIENTAPI: Set classification level to:", newLevel, data)
       } else {
-        console.info(
-          "No level change required for new level:", newLevel
+        console.info("PEXCLIENTAPI: No level change required for new level:", newLevel
         );
       }
     } else {
-      console.warn("Classification does not match VMR levelMap")
+      console.warn("PEXCLIENTAPI: Classification does not match VMR levelMap")
     }     
     var releaseResult = await releaseToken(vmr, token)
-    console.info("Released token:", releaseResult)
+    console.info("PEXCLIENTAPI: Released token:", releaseResult)
   } catch (error) {
-    console.error(error)    
+    console.error("PEXCLIENTAPI:", error)    
   }
 }
 
