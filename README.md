@@ -7,7 +7,7 @@ Var2: Airforce
 
 Then these are processed:
 
-1. If Var1 is "AllDept" then allow IDP authenticated users to join, then use pexClientAPI.js (MeetBot in logs) to lower security watermark if required.
+1. If Var1 is "AllDept" then allow IDP authenticated users to join, then use pexClientAPI (MeetBot in logs) to lower security watermark if required.
 
 2. If Var1 is "rank" then participants rank (jobtitle) is checked in a list named by Var2, currently there are two lists 'co' for Commissioned Offices and 'top' for top rank only. If the participant does not have the required rank (jobtitle) they are refused entry to VMR.
 
