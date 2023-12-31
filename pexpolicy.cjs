@@ -91,7 +91,7 @@ class PexPolicy {
       );
     } else {
       console.info(
-        "PEXPOLICY: Not enough IDP attributes to build overlay text name, default will be used"
+        "PEXPOLICY: Skipping build overlay text name, default will be used"
       );
     }
 
@@ -100,83 +100,85 @@ class PexPolicy {
     console.info("PEXPOLICY: service_tag parmameters: ", tag_params);
 
     // All departments tag - continue based on VMR config - allows classification change based on idp_attribute_clearance
-    if (tag_params[0] === "allDept") {
-      // Only do ClientAPI call if protocol is API - prevents double handle
-      if (query.protocol === "api") {
-        console.info(
-          "PEXPOLICY: Using ClientAPI to change VMR classification level to",
-          query.idp_attribute_clearance
-        );
-        
-        clientAPI.lowerClassLevel(
-          query.service_name,
-          query.idp_attribute_clearance
-        );
-      }
-      console.info("PEXPOLICY: Participant policy done:", pol_response);
-      return new Promise((resolve, _) => resolve(pol_response));
-    }
-
-    // Entry condition based on rank
-    else if (tag_params[0] === "rank") {
-      if (
-        tag_params[1] === "co" &&
-        rankCo.includes(query.idp_attribute_jobtitle)
-      ) {
-        // CO Memeber
-        console.info("PEXPOLICY: Participants idp jobtitle is on CO list OK");
-        console.info("PEXPOLICY: Participant policy done:", pol_response);
-        return new Promise((resolve, _) => resolve(pol_response));
-      } else if (
-        tag_params[1] === "top" &&
-        rankTop.includes(query.idp_attribute_jobtitle)
-      ) {
-        // Top Member
-        console.info("PEXPOLICY: Participants idp jobtitle is on TOP list OK");
-        console.info("PEXPOLICY: Participant policy done:", pol_response);
-        return new Promise((resolve, _) => resolve(pol_response));
-      } else {
-        pol_response_reject.result.reject_reason =
-          "ACCESS DENIED You do not have the required rank";
-        console.info("PEXPOLICY: Participants idp jobtitle NOT in any rank list");
-        console.info("PEXPOLICY: Participant policy done:", pol_response_reject);
-        return new Promise((resolve, _) => resolve(pol_response_reject));
-      }
-    }
-
-    // Entry condition based on idp attribute from idpAttr list
-    else if (idpAttrs.includes(tag_params[0])) {
-      // Extract idp attribute to check
-      const idpCheckAttr = "idp_attribute_" + tag_params[0];
-
-      // Admit participant if idp attribute matches 2nd tag parameter
-      if (query[idpCheckAttr] === tag_params[1]) {
-        console.info(
-          "PEXPOLICY: Participants idp attribute matches service_tag OK"
-        );
+    switch (true) {
+      case (tag_params[0] === "allDept") : {
+        // Only do ClientAPI call if protocol is API - prevents double handle
+        if (query.protocol === "api") {
+          console.info(
+            "PEXPOLICY: Using ClientAPI to change VMR classification level to",
+            query.idp_attribute_clearance
+          );
+          
+          clientAPI.lowerClassLevel(
+            query.service_name,
+            query.idp_attribute_clearance
+          );
+        }
         console.info("PEXPOLICY: Participant policy done:", pol_response);
         return new Promise((resolve, _) => resolve(pol_response));
       }
 
-      // Reject if no match
-      else {
-        pol_response_reject.result.reject_reason =
-          "ACCESS DENIED You are not in the " + tag_params[1];
-        console.info(
-          "PEXPOLICY: Participants idp attribute does NOT match service_tag"
-        );
-        console.info("PEXPOLICY: Participant policy done:", pol_response_reject);
-        return new Promise((resolve, _) => resolve(pol_response_reject));
+      // Entry condition based on rank
+      case (tag_params[0] === "rank") : {
+        if (
+          tag_params[1] === "co" &&
+          rankCo.includes(query.idp_attribute_jobtitle)
+        ) {
+          // CO Memeber
+          console.info("PEXPOLICY: Participants idp jobtitle is on CO list OK");
+          console.info("PEXPOLICY: Participant policy done:", pol_response);
+          return new Promise((resolve, _) => resolve(pol_response));
+        } else if (
+          tag_params[1] === "top" &&
+          rankTop.includes(query.idp_attribute_jobtitle)
+        ) {
+          // Top Member
+          console.info("PEXPOLICY: Participants idp jobtitle is on TOP list OK");
+          console.info("PEXPOLICY: Participant policy done:", pol_response);
+          return new Promise((resolve, _) => resolve(pol_response));
+        } else {
+          pol_response_reject.result.reject_reason =
+            "ACCESS DENIED You do not have the required rank";
+          console.info("PEXPOLICY: Participants idp jobtitle NOT in any rank list");
+          console.info("PEXPOLICY: Participant policy done:", pol_response_reject);
+          return new Promise((resolve, _) => resolve(pol_response_reject));
+        }
       }
-    }
 
-    // Default response
-    else {
-      console.info(
-        "PEXPOLICY: Participant policy done, default response:",
-        pol_response
-      );
-      return new Promise((resolve, _) => resolve(pol_response));
+      // Entry condition based on idp attribute from idpAttr list
+      case (idpAttrs.includes(tag_params[0])) : {
+        // Extract idp attribute to check
+        const idpCheckAttr = "idp_attribute_" + tag_params[0];
+
+        // Admit participant if idp attribute matches 2nd tag parameter
+        if (query[idpCheckAttr] === tag_params[1]) {
+          console.info(
+            "PEXPOLICY: Participants idp attribute matches service_tag OK"
+          );
+          console.info("PEXPOLICY: Participant policy done:", pol_response);
+          return new Promise((resolve, _) => resolve(pol_response));
+        }
+
+        // Reject if no match
+        else {
+          pol_response_reject.result.reject_reason =
+            "ACCESS DENIED You are not in the " + tag_params[1];
+          console.info(
+            "PEXPOLICY: Participants idp attribute does NOT match service_tag"
+          );
+          console.info("PEXPOLICY: Participant policy done:", pol_response_reject);
+          return new Promise((resolve, _) => resolve(pol_response_reject));
+        }
+      }
+
+      // Default response
+      default : {
+        console.info(
+          "PEXPOLICY: Participant policy done, default response:",
+          pol_response
+        );
+        return new Promise((resolve, _) => resolve(pol_response));
+      }
     }
   }
 }
