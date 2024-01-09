@@ -2,7 +2,7 @@
 // Process Pexip Infinity external policy requests
 
 // pexClientApi import and MeetBot setting;
-const clientAPI = require("./pexClientAPIv2.cjs");
+const clientAPI = require("./pexClientAPIv3.cjs");
 const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
 
