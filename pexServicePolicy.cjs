@@ -27,12 +27,12 @@ async function serviceConfigPol(query) {
       host_identity_provider_group: "",
     };
     console.info("SERVICE_POL: ClientAPI bypass");
-    return new Promise((resolve, _) => resolve(pol_response));
+    return pol_response;
   }
   // Default 'continue' response
   else {
     console.info("SERVICE_POL: Default continue");
-    return new Promise((resolve, _) => resolve(pol_response));
+    return pol_response;
   }
 }
 

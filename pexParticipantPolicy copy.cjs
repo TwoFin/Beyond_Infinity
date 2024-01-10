@@ -6,7 +6,7 @@ const clientAPI = require("./pexClientAPIv3.cjs");
 const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
 
-// Import policy configuration file
+// configuration file
 const pexpolicyConfig = require("./pexPolicyConfig.json");
 // Set lists for IDP processing from configuration file
 const idpAttrs = pexpolicyConfig.idpAttrs;
@@ -36,7 +36,7 @@ async function participantPropPol(query) {
   // ClientAPI bypass
   if (query.remote_alias === clientapi_name && query.call_tag === clientapi_tag) {
     console.info("PARTICIPANT_POL: ClientAPI bypass");
-    return pol_response;
+    return new Promise((resolve, _) => resolve(pol_response));
   }
 
   // Build overlay text from IDP attr
