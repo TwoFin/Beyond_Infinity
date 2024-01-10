@@ -10,16 +10,21 @@ class VmrMonitor {
     this.vmrname = vmr;
     this.participantList = [];
     this.token;
-    this.apiUUID;
     this.classMap;
     this.currentClassLevel;
   }
 
-  addParticipant(uuid, level) {
+  addParticipant(uuid, classification) {
+    // Map classification to level
+    let level = Number(
+      Object.keys(this.classMap).find((e) => this.classMap[e] == classification)
+    );
+    // Add new participant to list
     this.participantList.push({ uuid: uuid, level: level});
   }
 
   deleleParticipant(uuid) {
+    // Remove participant from list
     let partIndex = this.participantList.findIndex((p) => p.uuid === uuid);
     if (partIndex !== -1) {
       this.participantList.splice(partIndex, 1);
@@ -28,28 +33,41 @@ class VmrMonitor {
 }
 
 async function vmrEventSource(monitoredVmr){
-  // Get token and write back to monitoredVmr
-  let tokenFull = await newTokenFull(monitoredVmr.vmrname);
-  let token = tokenFull.token;
-  let apiUUID = tokenFull.participant_uuid;
-  monitoredVmr.apiUUID = apiUUID;
-  monitoredVmr.token = token;
   console.info("PEXCLIENTAPI: Setting up eventSource to monitor:", monitoredVmr.vmrname)
   
-  // Manage token refresh
+  // Get token and write back to monitoredVmr
+  let token = await newToken(monitoredVmr.vmrname);
+  monitoredVmr.token = token;
+  
+  // Manage token refresh - TODO put after es and mange destroy
   setInterval(() => {
     (async () => {
       token = await refreshToken(monitoredVmr.vmrname, token);
       monitoredVmr.token = token;
-      console.log("PEXCLIENTAPI: Token refreshed for:", monitoredVmr.vmrname)
+      console.info("PEXCLIENTAPI: Token refreshed for:", monitoredVmr.vmrname)
     })();
   }, 115 * 1000);
 
-  //  Setup eventSource and listener
+  //  Setup eventSource
   let url = pexnodeapi + monitoredVmr.vmrname + "/events?token=" + token;
   let es = new eventSource(url);
+  // participant_delete listerner
   es.addEventListener("participant_delete", (e) => {
-    console.log("Participant left:", JSON.parse(e.data));
+    console.info("PEXCLIENTAPI: Participant left:", JSON.parse(e.data));
+    monitoredVmr.deleleParticipant(JSON.parse(e.data).uuid);
+    // Check if VMR is empty
+    if (monitoredVmr.participantList.length === 0){ 
+      console.info("PEXCLIENTAPI: VMR is empmty, cleaning up")
+      // Release token and remove from active VMR list
+      releaseToken(monitoredVmr.vmrname, monitoredVmr.token);
+      let vmrIndex = activeVmrList.findIndex((v) => v.vmrname === monitoredVmr.vmrname);
+      if (vmrIndex != -1){
+        activeVmrList.splice(vmrIndex, 1);
+      }      
+    } else {
+      // Check if classificaton level needs to change 
+      checkClassLevel(monitoredVmr);
+    }
   });      
 }
 
@@ -109,48 +127,50 @@ async function vmrPost(vmr, token, path, json) {
   return data;
 }
 
+async function getClassMap(monitoredVmr){
+  let data = await vmrGet(monitoredVmr.vmrname, monitoredVmr.token, "/get_classification_level");
+  monitoredVmr.classMap = data.result.levels;
+  monitoredVmr.currentClassLevel = data.result.current;
+}
+
 async function changeClassLevel(vmr, token, level){
   let json = { "level": level };
   let data = await vmrPost(vmr, token, "/set_classification_level", json);
   return data;
 }
 
-async function checkClassLevel(monitoredVmr, classification){
-  console.info("PEXCLIENTAPI: Checking classificaton for:", monitoredVmr)
-  if(!monitoredVmr.token){
-    console.warn("PEXCLIENTAPI: No token, skipping classification check")    
+// Check all participants in VMR and change classification to lowest level
+async function checkClassLevel(monitoredVmr){
+  console.info("PEXCLIENTAPI: Checking classificaton level for:", monitoredVmr.vmrname);
+  let lowLevel = Math.min(...monitoredVmr.participantList.map((p) => p.level));
+  if (lowLevel !== monitoredVmr.currentClassLevel){
+    await changeClassLevel(monitoredVmr.vmrname, monitoredVmr.token, lowLevel);
+    monitoredVmr.currentClassLevel = lowLevel
+    console.info("PEXCLIENTAPI: Set classification level to:", lowLevel);
   } else {
-  let classMap = await getClassMap(monitoredVmr.vmrname, monitoredVmr.token)
-  console.info(classMap)
+    console.info("PEXCLIENTAPI: No classification level change required");
   }
-}
-
-async function getClassMap(monitoredVmr){
-  let data = await vmrGet(monitoredVmr.vmrname, monitoredVmr.token, "/get_classification_level");
-  monitoredVmr.classMap = data.result.levels;
 }
 
 async function monitorClassLevel(vmr, participant_uuid, classification){
   try {
-    if (activeVmrList.find((v) => v.vmrname === vmr)){
+    let monitoredVmr = activeVmrList.find((v) => v.vmrname === vmr)
+    if (monitoredVmr){
       /// VmrMonitor instace already in active VMR list
-      console.log('PEXCLIENTAPI: VMR already monitored');
-      let monitoredVmr = activeVmrList.find((v) => v.vmrname === vmr);
+      console.info('PEXCLIENTAPI: VMR already monitored');
       monitoredVmr.addParticipant(participant_uuid, classification);
-      // checkClassLevel(monitoredVmr, classification);
+      checkClassLevel(monitoredVmr);
 
     } else {
-      /// Creating VmrMonitor instace as not in active VMR list
-      console.log('PEXCLIENTAPI: VMR not monitored, creating new instance');
-      activeVmrList.push(new VmrMonitor(vmr, participant_uuid, classification));
-      let monitoredVmr = activeVmrList.find((v) => v.vmrname === vmr);
+      /// Create VmrMonitor instace as not in active VMR list
+      console.info('PEXCLIENTAPI: VMR not monitored, creating new instance');
+      let monitoredVmr = new VmrMonitor(vmr);
+      activeVmrList.push(monitoredVmr);
       await vmrEventSource(monitoredVmr);
       await getClassMap(monitoredVmr);
       monitoredVmr.addParticipant(participant_uuid, classification);
-      // checkClassLevel(monitoredVmr, classification);     
+      checkClassLevel(monitoredVmr);     
     }
-
-    console.log("PEXCLIENTAPI: Current active VMR list", activeVmrList)
 
   } catch (error) {
     console.error("PEXCLIENTAPI:", error)    
