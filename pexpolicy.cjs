@@ -78,7 +78,7 @@ class PexPolicy {
       };
       console.info("PEXPOLICY: Display name updated: ", pol_response.result.remote_display_name);
     } else {
-      console.info("PEXPOLICY: Skipping build overlay text name, default will be used");
+      console.info("PEXPOLICY: Skipping build overlay text name, previously updated or default will be used");
     }
 
     // Extract params from service_tag
@@ -92,7 +92,7 @@ class PexPolicy {
         if (query.protocol === "api") {
           console.info("PEXPOLICY: Using ClientAPI to change VMR classification level to", query.idp_attribute_clearance);
 
-          clientAPI.lowerClassLevel(query.service_name, query.idp_attribute_clearance);
+          clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
         }
         console.info("PEXPOLICY: Participant policy done:", pol_response);
         return new Promise((resolve, _) => resolve(pol_response));
