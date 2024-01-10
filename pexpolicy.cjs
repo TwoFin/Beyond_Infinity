@@ -90,7 +90,7 @@ class PexPolicy {
       case tag_params[0] === "allDept": {
         // Only do ClientAPI call if protocol is API - prevents double handle
         if (query.protocol === "api") {
-          console.info("PEXPOLICY: Using ClientAPI to change VMR classification level to", query.idp_attribute_clearance);
+          console.info("PEXPOLICY: Using ClientAPI to monitor VMR classification: ", query.service_name);
 
           clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
         }

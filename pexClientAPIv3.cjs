@@ -6,56 +6,55 @@ const clientapiID = { display_name: process.env.PEXIP_CLIENTAPI_NAME, call_tag: 
 let activeVmrList = [];
 
 class VmrMonitor {
-  constructor(vmr, participant_uuid, classification) {
+  constructor(vmr) {
     this.vmrname = vmr;
     this.participantList = [];
-    this.tokenFull = null;
-    this.token = null;
-    // TODO decide on whole object or just name
-    // activeVmrList.push(this.vmrname);
+    this.token;
+    this.apiUUID;
+    vmrEventSource(this);
   }
 
-  async getToken(){
-    this.tokenFull = await pexClientAPI.newTokenFull(this.vmrname)
-  }
-
-  addParticipant(uuid, level, isBot) {
-    this.participantList.push({ uuid: uuid, level: level, isBot: isBot });
-    // Classification logic here
+  addParticipant(uuid, level) {
+    this.participantList.push({ uuid: uuid, level: level});
   }
 
   deleleParticipant(uuid) {
-    // Remove participant
     let partIndex = this.participantList.findIndex((p) => p.uuid === uuid);
     if (partIndex !== -1) {
       this.participantList.splice(partIndex, 1);
     }
-    // Check if only MeetBot left in vmr
-    if (this.participantList.length === 1) {
-      console.log("Only 1 participant left, checking if MeetBot");
-      let botIndex = this.participantList.findIndex((p) => p.isBot === true);
-      if (botIndex !== -1) {
-        console.log("Last participant is MeetBot so removing");
-        this.participantList.splice(partIndex, 1);
-        // Release Token
-      }
-    }  
-    // Clean up vmr instance if empty
-    if (this.participantList.length === 0) {
-      // Destroy vmr class
-      let vmrListIndex = activeVmrList.findIndex((v) => v === this.vmrname);
-      if (vmrListIndex !== -1) {
-        activeVmrList.splice(vmrListIndex, 1);
-      }
-      delete this;
-    }    
   }
 }
 
-async function subVmrExit(vmr){
-  console.info("PEXCLIENTAPI: Setting up eventSource to monitor VMR exits for:", vmr)
-  let token = newToken(vmr);
+async function vmrEventSource(monitoredVmr){
+  // Get token and write back to monitoredVmr
+  let tokenFull = await newTokenFull(monitoredVmr.vmrname);
+  let token = tokenFull.token;
+  let apiUUID = tokenFull.participant_uuid;
+  monitoredVmr.apiUUID = apiUUID;
+  monitoredVmr.token = token;
+  console.info("PEXCLIENTAPI: Setting up eventSource to monitor VMR exits for:", monitoredVmr.vmrname)
+  
+  // Manage token refresh
+  setInterval(() => {
+    (async () => {
+      token = await refreshToken(monitoredVmr.vmrname, token);
+      monitoredVmr.token = tokenFull.token;
+      console.log("PEXCLIENTAPI: Token refreshed for:", monitoredVmr)
+    })();
+  }, 115 * 1000);
 
+  //  Setup eventSource and listener
+  let url = pexnodeapi + monitoredVmr.vmrname + "/events?token=" + token;
+  let es = new eventSource(url);
+  es.addEventListener("participant_delete", (e) => {
+    console.log("Participant left:", JSON.parse(e.data));
+  });      
+}
+
+async function getClassMap(monitoredVmr){
+  let data = await vmrGet(monitoredVmr.vmrname, monitoredVmr.token, "/get_classification_level")
+  monitoredVmr.classMap = data.result.levels;
 }
 
 async function newToken(vmr) {
