@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const eventSource = require("eventsource");
 
 const pexnodeapi = "https://" + process.env.PEXIP_NODE + "/api/client/v2/conferences/";
 const clientapiID = { display_name: process.env.PEXIP_CLIENTAPI_NAME, call_tag: process.env.PEXIP_CLIENTAPI_TAG };
@@ -49,6 +50,12 @@ class VmrMonitor {
       delete this;
     }    
   }
+}
+
+async function subVmrExit(vmr){
+  console.info("PEXCLIENTAPI: Setting up eventSource to monitor VMR exits for:", vmr)
+  let token = newToken(vmr);
+
 }
 
 async function newToken(vmr) {
@@ -193,4 +200,4 @@ async function monitorClassLevel(vmr, participant_uuid, classification){
   }
 }
 
-module.exports = {setClassLevel, monitorClassLevel, lowerClassLevel, newTokenFull};
+module.exports = {monitorClassLevel};

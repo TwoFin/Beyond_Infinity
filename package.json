@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/TwoFin/PexPolicy_node_cjs#readme",
   "dependencies": {
+    "eventsource": "^2.0.2",
     "node-fetch": "^2.6.7"
   }
 }
