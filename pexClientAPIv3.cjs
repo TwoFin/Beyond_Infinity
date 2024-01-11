@@ -80,7 +80,7 @@ async function getClassMap(monitoredVmr) {
 async function checkClassLevel(monitoredVmr) {
   console.info("CLIENT_API: Checking classificaton level for:", monitoredVmr.vmrname);
   let lowLevel = Math.min(...monitoredVmr.participantList.map((p) => p.level));
-  if (lowLevel !== monitoredVmr.currentClassLevel) {
+  if (!isNaN(lowLevel) && lowLevel !== monitoredVmr.currentClassLevel) {
     await changeClassLevel(monitoredVmr.vmrname, monitoredVmr.token, lowLevel);
     monitoredVmr.currentClassLevel = lowLevel;
     console.info("CLIENT_API: Set classification level to:", lowLevel);
@@ -99,8 +99,11 @@ class VmrMonitor {
     this.currentClassLevel;
   }
   addParticipant(uuid, classification) {
-    // Map classification to level
-    let level = Number(Object.keys(this.classMap).find((e) => this.classMap[e] == classification));
+    // Map classification to level if classifiction supplied
+    let level = this.currentClassLevel;
+    if (classification){
+      level = Number(Object.keys(this.classMap).find((e) => this.classMap[e] == classification));
+    }
     // Add new participant to list
     this.participantList.push({ uuid: uuid, level: level });
   }
@@ -145,7 +148,6 @@ async function vmrEventSource(monitoredVmr) {
       if (vmrIndex != -1) {
         activeVmrList.splice(vmrIndex, 1);
       }
-      console.info
     } else {
       // Check if classificaton level needs to change
       checkClassLevel(monitoredVmr);
@@ -163,7 +165,7 @@ async function monitorClassLevel(vmr, participant_uuid, classification) {
       /// VmrMonitor instace already in active VMR list
       console.info("CLIENT_API: VMR already monitored");
       monitoredVmr.addParticipant(participant_uuid, classification);
-      if (classification) {checkClassLevel(monitoredVmr)};
+      checkClassLevel(monitoredVmr);
     } else {
       /// Create VmrMonitor instace as not in active VMR list
       console.info("CLIENT_API: VMR not monitored, creating new instance");
@@ -172,7 +174,7 @@ async function monitorClassLevel(vmr, participant_uuid, classification) {
       await vmrEventSource(monitoredVmr);
       await getClassMap(monitoredVmr);
       monitoredVmr.addParticipant(participant_uuid, classification);
-      if (classification) {checkClassLevel(monitoredVmr)};
+      checkClassLevel(monitoredVmr);
     }
     console.debug("DEBUG: Monitored VMRs:", activeVmrList)
   } catch (error) {
