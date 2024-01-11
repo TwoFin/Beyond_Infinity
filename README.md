@@ -1,5 +1,15 @@
 # External Infinity policy Server that uses VMR service tags and IDP attributes to allow or refuse entry to the VMR.
 
+## Files
+app.cjs - Entry point creating http server and routing to modules
+pexServicePolicy.cjs - Handles Pexip Infinty external policy 'Service config' requests
+pexParticipant.cjs - Handles Pexip Infinity external policy 'Participant properties' requests
+pexPolicyConfig.json - Provides list if idp attributes to use & rank lists
+
+## Display name processing
+If the participant has IDP attibutes, display name (overlay text) is contructed: jobtitle surname | department
+
+## Service tag processing
 Service tags are first deiminated by underscore '_' to produce two variables i.e.:
 "department_Airforce" is separated into two variables:
 Var1: department
@@ -7,7 +17,7 @@ Var2: Airforce
 
 Then these are processed:
 
-1. If Var1 is "AllDept" then allow IDP authenticated users to join, then use pexClientAPI (MeetBot in logs) to lower security watermark if required.
+1. If Var1 is "AllDept" then allow IDP authenticated users to join, then use pexClientAPI to change security watermark as according to participants .
 
 2. If Var1 is "rank" then participants rank (jobtitle) is checked in a list named by Var2, currently there are two lists 'co' for Commissioned Offices and 'top' for top rank only. If the participant does not have the required rank (jobtitle) they are refused entry to VMR.
 
@@ -39,7 +49,7 @@ Top Rank:
     "Admiral"
 ]
 
-## Client API setting are loaded from enviroment variables to enable setting up for different Infinty enviroments:
+## Client API settings are loaded from enviroment variables to enable setting up for different Infinty enviroments:
 
 PEXIP_NODE - Conference node to send ClientAPI requests
 
