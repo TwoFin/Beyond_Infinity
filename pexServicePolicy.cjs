@@ -1,5 +1,5 @@
 // pexServicePolicy.cjs
-// Process Pexip Infinty external policy 'Service config' requests
+// Handles Pexip Infinty external policy 'Service config' requests
 
 // ClientAPI ID settings from ENV
 const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
