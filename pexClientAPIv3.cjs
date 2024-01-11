@@ -18,6 +18,7 @@ async function newToken(vmr) {
     headers: { "Content-Type": "application/json" },
   });
   const data = await response.json();
+  if (response.status !== 200){console.warn("CLIENT_API:newToken: Recieved non 200 from ClientAPI:", response.status)};
   return data.result.token;
 }
 
@@ -27,6 +28,7 @@ async function refreshToken(vmr, token) {
     headers: { token: token },
   });
   const data = await response.json();
+  if (response.status !== 200){console.warn("CLIENT_API:refreshToken: Recieved non 200 from ClientAPI:", response.status)};
   return data.result.token;
 }
 
@@ -36,6 +38,7 @@ async function releaseToken(vmr, token) {
     headers: { token: token },
   });
   let data = await response.json();
+  if (response.status !== 200){console.warn("CLIENT_API:releaseToken: Recieved non 200 from ClientAPI:", response.status)};
   return data;
 }
 
@@ -44,6 +47,7 @@ async function vmrGet(vmr, token, path) {
     headers: { token: token },
   });
   let data = await response.json();
+  if (response.status !== 200){console.warn("CLIENT_API:vmrGet: Recieved non 200 from ClientAPI:", response.status)};
   return data;
 }
 
@@ -54,6 +58,7 @@ async function vmrPost(vmr, token, path, json) {
     headers: { "Content-Type": "application/json", token: token },
   });
   let data = await response.json();
+  if (response.status !== 200){console.warn("CLIENT_API:vmrPost: Recieved non 200 from ClientAPI:", response.status)};
   return data;
 }
 
@@ -114,8 +119,8 @@ async function vmrEventSource(monitoredVmr) {
   // Get token and write back to monitoredVmr
   let token = await newToken(monitoredVmr.vmrname);
   monitoredVmr.token = token;
-  // Manage token refresh - TODO manage vmr destroy
-  setInterval(() => {
+  // Manage token refresh
+  let refeshTokenInterval = setInterval(() => {
     (async () => {
       token = await refreshToken(monitoredVmr.vmrname, token);
       monitoredVmr.token = token;
@@ -132,13 +137,15 @@ async function vmrEventSource(monitoredVmr) {
     monitoredVmr.deleleParticipant(JSON.parse(e.data).uuid);
     // Check if VMR is empty
     if (monitoredVmr.participantList.length === 0) {
-      console.info("CLIENT_API: VMR is empty, cleaning up");
-      // Release token and remove from active VMR list - TODO stop token refresh and delete class object
+      console.info("CLIENT_API: VMR is empty, cleaning up: ", monitoredVmr.vmrname);
+      // Release token, clear refresh and remove from active VMR list
+      clearInterval(refeshTokenInterval)
       releaseToken(monitoredVmr.vmrname, monitoredVmr.token);
       let vmrIndex = activeVmrList.findIndex((v) => v.vmrname === monitoredVmr.vmrname);
       if (vmrIndex != -1) {
         activeVmrList.splice(vmrIndex, 1);
       }
+      console.info
     } else {
       // Check if classificaton level needs to change
       checkClassLevel(monitoredVmr);
