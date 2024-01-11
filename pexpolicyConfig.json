@@ -1,5 +1,5 @@
 {
-    "idpAttrs": ["department", "jobtitle", "givenname", "surname"],
+    "idpAttrs": ["department", "jobtitle", "givenname", "surname", "clearance"],
 
     "rankTop": ["Air Chief Marshal","General","Admiral"],
 
