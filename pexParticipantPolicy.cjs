@@ -29,20 +29,24 @@ const pol_continue = {
 };
 
 async function participantPropPol(query) {
+  // Copy default responses in local scope - prevents old data from previous function call
+  const pol_response = Object.assign({}, pol_continue);
+  const pol_response_reject = Object.assign({}, pol_reject_msg);
+
   // ClientAPI bypass
   if (query.remote_alias === clientapi_name && query.call_tag === clientapi_tag) {
     console.info("PARTICIPANT_POL: ClientAPI bypass");
-    return pol_continue;
+    return pol_response;
   }
 
   // Process requests if protocol === "api" - main actions here & prevents double handle for Web clients
   if (query.protocol === "api") {
     // If IDP attributes are present, built overlay text
     if (query.idp_attribute_jobtitle && query.idp_attribute_surname && query.idp_attribute_department) {
-      pol_continue.result = {
+      pol_response.result = {
         remote_display_name: query.idp_attribute_jobtitle + " " + query.idp_attribute_surname + " | " + query.idp_attribute_department,
       };
-      console.info("PARTICIPANT_POL: Display name updated: ", pol_continue.result.remote_display_name);
+      console.info("PARTICIPANT_POL: Display name updated: ", pol_response.result.remote_display_name);
     }
 
     // Inspect VMR service_tag for participant treatment
@@ -67,9 +71,9 @@ async function participantPropPol(query) {
           console.info("PARTICIPANT_POL: Participants idp jobtitle is on TOP list OK");
         } else {
           // Not in any rank list
-          pol_reject_msg.result.reject_reason = "ACCESS DENIED You do not have the required rank";
-          console.warn("PARTICIPANT_POL: Participants idp jobtitle NOT in any rank list, response:", pol_reject_msg);
-          return pol_reject_msg;
+          pol_response_reject.result.reject_reason = "ACCESS DENIED You do not have the required rank";
+          console.warn("PARTICIPANT_POL: Participants idp jobtitle NOT in any rank list, response:", pol_response_reject);
+          return pol_response_reject;
         }
         break;
       }
@@ -79,9 +83,9 @@ async function participantPropPol(query) {
         if (query["idp_attribute_" + tag_params[0]] === tag_params[1]) {
           console.info("PARTICIPANT_POL: Participants idp attribute matches service_tag OK");
         } else {
-          pol_reject_msg.result.reject_reason = "ACCESS DENIED You are not in: " + tag_params[1];
-          console.warn("PARTICIPANT_POL: Participants idp attribute does NOT match service_tag, response:", pol_reject_msg);
-          return pol_reject_msg;
+          pol_response_reject.result.reject_reason = "ACCESS DENIED You are not in: " + tag_params[1];
+          console.warn("PARTICIPANT_POL: Participants idp attribute does NOT match service_tag, response:", pol_response_reject);
+          return pol_response_reject;
         }
         break;
       }
@@ -93,12 +97,12 @@ async function participantPropPol(query) {
     }
 
     // Return treated response
-    console.info("PARTICIPANT_POL: Response:", pol_continue);
-    return pol_continue;
+    console.info("PARTICIPANT_POL: Response:", pol_response);
+    return pol_response;
   } else {
     // Default response for non protocol === "api" requests
     console.info("PARTICIPANT_POL: Not API protocol, default continue");
-    return pol_continue;
+    return pol_response;
   }
 }
 

@@ -14,7 +14,7 @@
             "program": "${workspaceFolder}/app.cjs",
             "env": {
                 "PEXIP_NODE": "sip.twofin.net",
-                "PEXIP_CLIENTAPI_NAME": "MeetBot",
+                "PEXIP_CLIENTAPI_NAME": "Virtual Concierge",
                 "PEXIP_CLIENTAPI_TAG": "secret123"
             }
         }

@@ -150,6 +150,7 @@ async function vmrEventSource(monitoredVmr) {
       // Check if classificaton level needs to change
       checkClassLevel(monitoredVmr);
     }
+    console.debug("DEBUG: Monitored VMRs:", activeVmrList)
   });
 }
 
@@ -162,7 +163,7 @@ async function monitorClassLevel(vmr, participant_uuid, classification) {
       /// VmrMonitor instace already in active VMR list
       console.info("CLIENT_API: VMR already monitored");
       monitoredVmr.addParticipant(participant_uuid, classification);
-      checkClassLevel(monitoredVmr);
+      if (classification) {checkClassLevel(monitoredVmr)};
     } else {
       /// Create VmrMonitor instace as not in active VMR list
       console.info("CLIENT_API: VMR not monitored, creating new instance");
@@ -171,8 +172,9 @@ async function monitorClassLevel(vmr, participant_uuid, classification) {
       await vmrEventSource(monitoredVmr);
       await getClassMap(monitoredVmr);
       monitoredVmr.addParticipant(participant_uuid, classification);
-      checkClassLevel(monitoredVmr);
+      if (classification) {checkClassLevel(monitoredVmr)};
     }
+    console.debug("DEBUG: Monitored VMRs:", activeVmrList)
   } catch (error) {
     console.error("CLIENT_API:", error);
   }
