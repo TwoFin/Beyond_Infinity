@@ -1,16 +1,41 @@
-# External Infinity policy Server that uses VMR service tags and IDP attributes to allow or refuse entry to the VMR.
+# Pexip Infinity API Intergration Server
+
+Node.JS server to leverage Pexip Infinity APIs to provide features and functions not 'built-in' to the Infinity solution
+
+Current supported APIs
+
+1. External Policy Server - service config & participant properties
+
+2. REST Client API for VMRs
+
+## Current Features and Functions Overview
+
+1. Display name contsruction based on IDP attributes
+
+1. VMR entry control based on IDP attibutes
+
+2. VMR Classification level change based on participant entry/exit & IDP attribute 'clearance'
 
 ## Files
 app.cjs - Entry point creating http server and routing to modules
-pexServicePolicy.cjs - Handles Pexip Infinty external policy 'Service config' requests
-pexParticipant.cjs - Handles Pexip Infinity external policy 'Participant properties' requests
-pexPolicyConfig.json - Provides list if idp attributes to use & rank lists
+pexServicePolicy.cjs - Module to handles Pexip Infinty external policy 'Service config' requests
+pexParticipant.cjs - Module to handles Pexip Infinity external policy 'Participant properties' requests
+pexpolicyConfig.json - Configuration data used for external policy modules
+pexClientAPI.cjs - Module handles outbound REST ClientAPI request and local VMR 'object' representation
 
-## Display name processing
+## Enviroment Variables
+EXIP_NODE - Conference node to send ClientAPI requests
+PEXIP_CLIENTAPI_TAG - call_tag to use for security
+PEXIP_CLIENTAPI_NAME - display name to use, also checked for security
+
+## Current Features and Functions Detailed
+
+### Display name contsruction based on IDP attributes
 If the participant has IDP attibutes, display name (overlay text) is contructed: jobtitle surname | department
 
-## Service tag processing
-Service tags are first deiminated by underscore '_' to produce two variables i.e.:
+### VMR treatment based on service_tag
+Service tags are deiminated by underscore '_' to produce variables to use for treament i.e.:
+"allAdf" 
 "department_Airforce" is separated into two variables:
 Var1: department
 Var2: Airforce
@@ -27,33 +52,3 @@ Other examples of VMR tags:
 "givenname_Jon": Only participants called Jon will be allowed into VMR - not real life but shows how different IDP claims can be used
 
 4. Any other calls, i.e.: no service tag, are allowed to continue to prevent failures in demo environment. In production this would likely be set to reject call.
-
-## Current list entries from pexpolicyConfig.json file:
-
-IDP attributes: ["department", "jobtitle", "givenname", "surname"]
-
-CO Rank: 
-["Air Chief Marshal",
-    "General",
-    "Admiral",
-    "Colonel",
-    "Captain",
-    "Squadron Leader",
-    "Major",
-    "Lieutenant"
-]
-
-Top Rank:
-["Air Chief Marshal",
-    "General",
-    "Admiral"
-]
-
-## Client API settings are loaded from enviroment variables to enable setting up for different Infinty enviroments:
-
-PEXIP_NODE - Conference node to send ClientAPI requests
-
-PEXIP_CLIENTAPI_TAG - call_tag to use for security
-
-PEXIP_CLIENTAPI_NAME - display name to use, also checked for security
-
