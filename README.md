@@ -37,12 +37,13 @@ PEXIP_CLIENTAPI_NAME - display name to use, also checked for security
 ## Current Features and Functions Detailed
 
 ### Display name contsruction based on IDP attributes
-If the participant has IDP attibutes, display name (overlay text) is contructed: jobtitle surname | department
+If the participant has IDP attibutes, display name (overlay text) is constructed: jobtitle surname | department
 
 ### VMR treatment based on service_tag
 Service tags are deiminated by underscore '_' to produce variables to use for treament i.e.:
 
-"allAdf" is a single variable 
+"allDept" is a single variable
+ 
 "department_Airforce" is separated into two variables: "department" & "Airforce"
 
 Then these are processed:

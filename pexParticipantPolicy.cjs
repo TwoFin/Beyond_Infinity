@@ -2,7 +2,7 @@
 // Handles Pexip Infinity external policy 'Participant properties' requests
 
 // pexClientApi import and ClientAPI ID setting from ENV;
-const clientAPI = require("./pexClientAPIv3.cjs");
+const clientAPI = require("./pexClientAPI.cjs");
 const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
 
