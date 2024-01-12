@@ -53,10 +53,10 @@ Then these are processed:
 
 3. Var1 is tested against a list of IDP attributes (claims configure on Infinity & IDP), if there is a match then only participants with that IDP parameter matching Var2 will be allowed into VMR. In the above example only participants with IDP claim 'department' matching 'Airforce' will be allowed into the VMR.
 
-Other examples of VMR tags:
+    Other examples of VMR tags:
 
-"jobtitle_Sergeant": Only participants with rank of sergeant (jobtitle) are allow into the VMR
+    "jobtitle_Sergeant": Only participants with rank of sergeant (jobtitle) are allow into the VMR
 
-"givenname_Jon": Only participants called Jon will be allowed into VMR - not real life but shows how different IDP claims can be used
+    "givenname_Jon": Only participants called Jon will be allowed into VMR - not real life but shows how different IDP claims can be used
 
 4. Any other calls, i.e.: no service tag, are allowed to continue to prevent failures in demo environment. In production this would likely be set to reject call.
