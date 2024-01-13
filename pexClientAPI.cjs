@@ -70,7 +70,7 @@ async function changeClassLevel(vmr, token, level) {
   return data;
 }
 
-// Simple function to set VMR object classfiication map and default level
+// Simple function to get VMR object classfiication map and default level
 async function getClassMap(monitoredVmr) {
   let data = await vmrGet(monitoredVmr.vmrname, monitoredVmr.token, "/get_classification_level");
   monitoredVmr.classMap = data.result.levels;
