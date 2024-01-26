@@ -1,5 +1,5 @@
 {
-  "name": "pexpolicy_node_cjs",
+  "name": "beyond_infinity",
   "version": "1.0.0",
   "description": "",
   "main": "app.cjs",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TwoFin/PexPolicy_node_cjs.git"
+    "url": "git+https://github.com/TwoFin/Beyond_Infinity.git"
   },
   "author": "Jon Turner",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/TwoFin/PexPolicy_node_cjs/issues"
+    "url": "https://github.com/TwoFin/Beyond_Infinity/issues"
   },
-  "homepage": "https://github.com/TwoFin/PexPolicy_node_cjs#readme",
+  "homepage": "https://github.com/TwoFin/Beyond_Infinity#readme",
   "dependencies": {
     "eventsource": "^2.0.2",
     "node-fetch": "^2.6.7"

@@ -2,6 +2,7 @@
 // Handles Pexip Infinity ClientAPI (REST) requests
 const fetch = require("node-fetch");
 const eventSource = require("eventsource");
+const VmrMonitor = require("./vmrMonitorClass.cjs")
 
 // Pexip conference node & API ID details from ENV
 const pexnodeapi = "https://" + process.env.PEXIP_NODE + "/api/client/v2/conferences/";
@@ -69,7 +70,7 @@ async function changeClassLevel(vmr, token, level) {
   return data;
 }
 
-// Simple function to set VMR object classfiication map and default level
+// Simple function to get VMR object classfiication map and default level
 async function getClassMap(monitoredVmr) {
   let data = await vmrGet(monitoredVmr.vmrname, monitoredVmr.token, "/get_classification_level");
   monitoredVmr.classMap = data.result.levels;
@@ -86,33 +87,6 @@ async function checkClassLevel(monitoredVmr) {
     console.info("CLIENT_API: Set classification level to:", lowLevel);
   } else {
     console.info("CLIENT_API: No classification level change required");
-  }
-}
-
-// VMR Object class (monitoredVmr) to represent monitored/active VMR
-class VmrMonitor {
-  constructor(vmr) {
-    this.vmrname = vmr;
-    this.participantList = [];
-    this.token;
-    this.classMap;
-    this.currentClassLevel;
-  }
-  addParticipant(uuid, classification) {
-    // Map classification to level if classifiction supplied
-    let level = this.currentClassLevel;
-    if (classification){
-      level = Number(Object.keys(this.classMap).find((e) => this.classMap[e] == classification));
-    }
-    // Add new participant to list
-    this.participantList.push({ uuid: uuid, level: level });
-  }
-  deleleParticipant(uuid) {
-    // Remove participant from list
-    let partIndex = this.participantList.findIndex((p) => p.uuid === uuid);
-    if (partIndex !== -1) {
-      this.participantList.splice(partIndex, 1);
-    }
   }
 }
 
