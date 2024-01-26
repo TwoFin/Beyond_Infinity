@@ -1,5 +1,6 @@
 // pexParticipant.cjs
 // Handles Pexip Infinity external policy 'Participant properties' requests
+// TODO - need to tidy up & abtract/simplify to remove dependency on lower level modules
 
 // Imports and ENV
 const vmrTreatment = require("./vmrTreatments.cjs");

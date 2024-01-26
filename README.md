@@ -17,15 +17,19 @@ Current supported APIs
 2. VMR Classification level change based on participant entry/exit & IDP attribute 'clearance'
 
 ## Files
-app.cjs - Entry point creating http server and routing to modules
+app.cjs - Entry point creating http server and routing to Policy modules
 
-pexServicePolicy.cjs - Module to handles Pexip Infinty external policy 'Service config' requests
+pexpolicyConfig.json - Configuration data used for external policy modules and sub modules
 
-pexParticipant.cjs - Module to handles Pexip Infinity external policy 'Participant properties' requests
+pexServicePolicy.cjs - High level module to handles Pexip Infinty external policy 'Service config' requests
 
-pexpolicyConfig.json - Configuration data used for external policy modules
+pexParticipantPolicy.cjs - High level module to handles Pexip Infinity external policy 'Participant properties' requests
 
-pexClientAPI.cjs - Module handles outbound REST ClientAPI request and local VMR 'object' representation
+vmrTreatments.cjs - Core sub module for VMR IDP entry & classification handeling
+
+vmrMonitorClass.cjs - Class module for building object representation of VMRs
+
+pexClientAPI.cjs - Module handles REST ClientAPI request
 
 ## Enviroment Variables
 PEXIP_NODE - Conference node to send ClientAPI requests

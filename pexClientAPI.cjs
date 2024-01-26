@@ -1,4 +1,4 @@
-// pexClientAPIv3.cjs
+// pexClientAPI.cjs
 // Handles Pexip Infinity ClientAPI (REST) requests
 const fetch = require("node-fetch");
 const eventSource = require("eventsource");
