@@ -1,8 +1,8 @@
 //app.js
 const http = require("http");
 const url = require("url");
-const pexParticipantPolicy = require("./pexParticipantPolicy.cjs");
-const pexServicePolicy = require("./pexServicePolicy.cjs");
+const pexParticipantPolicy = require("./VMR_IDP_Classification/pexParticipantPolicy.cjs");
+const pexServicePolicy = require("./VMR_IDP_Classification/pexServicePolicy.cjs");
 
 const PORT = process.env.PORT || 5000;
 
