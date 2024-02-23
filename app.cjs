@@ -1,8 +1,10 @@
 //app.js
 const http = require("http");
 const url = require("url");
-const pexParticipantPolicy = require("./VMR_IDP_Classification/pexParticipantPolicy.cjs");
-const pexServicePolicy = require("./VMR_IDP_Classification/pexServicePolicy.cjs");
+const config = require("./config.json");
+const featurePath = config.featurePath;
+const pexParticipantPolicy = require("./",featurePath,"/pexParticipantPolicy.cjs");
+const pexServicePolicy = require("./",featurePath,"/pexServicePolicy.cjs");
 
 const PORT = process.env.PORT || 5000;
 
