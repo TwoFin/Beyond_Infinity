@@ -1,8 +1,11 @@
 //app.js
 const http = require("http");
 const url = require("url");
-const pexParticipantPolicy = require("./pexParticipantPolicy.cjs");
-const pexServicePolicy = require("./pexServicePolicy.cjs");
+
+// Load Policy code from paths in config 
+const config = require("./config.json");
+const pexParticipantPolicy = require(config.pexParticipantPolicy);
+const pexServicePolicy = require(config.pexServicePolicy);
 
 const PORT = process.env.PORT || 5000;
 

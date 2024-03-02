@@ -22,7 +22,7 @@ async function serviceConfigPol(query) {
   if (query.remote_alias === clientapi_name && query.call_tag === clientapi_tag) {
     pol_response.result = {
       name: query.local_alias,
-      service_tag: "allDept",
+      service_tag: "virtual_ClientAPI",
       service_type: "conference",
       host_identity_provider_group: "",
     };

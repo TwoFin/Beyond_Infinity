@@ -4,12 +4,12 @@
 
 // Imports and ENV
 const vmrTreatment = require("./vmrTreatments.cjs");
-const pexpolicyConfig = require("./pexPolicyConfig.json");
+const config = require("./config.json");
 const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
 // Set list of IDP attibutes & VMR service_tag(s) to treat - TODO consider using "vmrtreatment_" in Infinity service_tag
-const idpAttrs = pexpolicyConfig.idpAttrs;
-const treatedVmrsTag = pexpolicyConfig.treatedVmrsTag;
+const idpAttrs = config.idpAttrs;
+const treatedVmrsTag = config.treatedVmrsTag;
 
 async function participantPropPol(query) {
   // default policy response

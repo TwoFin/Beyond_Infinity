@@ -1,11 +1,11 @@
 // Imports
-const clientAPI = require("./pexClientAPI.cjs");
-const pexpolicyConfig = require("./pexPolicyConfig.json");
+const clientAPI = require("../Common/pexClientAPI.cjs");
+const config = require("./config.json");
 
 // Set lists for IDP processing from configuration file
-const idpAttrs = pexpolicyConfig.idpAttrs;
-const rankTop = pexpolicyConfig.rankTop;
-const rankCo = pexpolicyConfig.rankCo;
+const idpAttrs = config.idpAttrs;
+const rankTop = config.rankTop;
+const rankCo = config.rankCo;
 
 function vmrTreatment(tag_params, query, pol_response) {
 console.debug("VMR_TREATMENTS: Recieved request for service_tag: ", tag_params, pol_response) 
