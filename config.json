@@ -1,3 +1,4 @@
 {
-    "featurePath" : "VMR_IDP_Classification"
+    "pexServicePolicy" : "./VMR_IDP_Classification/pexServicePolicy.cjs",
+    "pexParticipantPolicy" : "./VMR_IDP_Classification/pexParticipantPolicy.cjs"
 }
