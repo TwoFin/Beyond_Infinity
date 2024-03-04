@@ -11,7 +11,7 @@ function displayNameBuild(query) {
             remote_display_name = ""
             idpDisplayNameBuild.forEach((element) => {
                 if (element.startsWith("idp_attribute")) {
-                    if (query[element] !== undefined) {
+                    if (query[element] !== "") {
                         remote_display_name += query[element] + " ";
                     } else {
                         throw error;
