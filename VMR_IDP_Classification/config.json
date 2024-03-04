@@ -1,4 +1,6 @@
 {
+    "displayNameBuild" : ["jobtitle", "surname", "|", "department"],
+    
     "treatedVmrsTag" : ["allDept","rank"],
 
     "idpAttrs": ["department", "jobtitle", "givenname", "surname", "clearance"],

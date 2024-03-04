@@ -14,27 +14,35 @@
 ## Current Features and Functions Detailed
 
 ### Display name contsruction based on IDP attributes
-If the participant has IDP attibutes, display name (overlay text) is constructed: jobtitle surname | department
 
-### VMR treatment based on service_tag
-Service tags are deiminated by underscore '_' to produce variables to use for treament i.e.:
+If the participant has IDP attibutes, display name (overlay text) is constructed from config file setting: displayNameBuild
 
-"allDept" is a single variable
- 
-"department_Airforce" is separated into two variables: "department" & "Airforce"
+### VMR control based on service_tag & participants IDP attributes
 
-Then these are processed:
+VMR Service tag shall be contructed:
 
-1. If Var1 is "AllDept" then allow IDP authenticated users to join, then use pexClientAPI to change security watermark as according to participants .
+`FeatureAbb_idpAttrTest_idpAttrValue_Class`
 
-2. If Var1 is "rank" then participants rank (jobtitle) is checked in a list named by Var2, currently there are two lists 'co' for Commissioned Offices and 'top' for top rank only. If the participant does not have the required rank (jobtitle) they are refused entry to VMR.
+Where:
+`FeatureAbb` - Future use to select different features modules  - default "IDPC" - if no match default server action continue/reject
+`idpAttrTest` - IDP attibute from user to test against idpAttrValue, entry to VMR if values match - default "ANY" - does not perform check
+`idpAttrValue` - Value to test againt users value of idpAttrTest - default "ANY" - does not perform check
+`Class` - Minuimum classification in IDP attribute 'clearance' required to enter VMR - default "ANY" - classification is changed according to participants
 
-3. Var1 is tested against a list of IDP attributes (claims configure on Infinity & IDP), if there is a match then only participants with that IDP parameter matching Var2 will be allowed into VMR. In the above example only participants with IDP claim 'department' matching 'Airforce' will be allowed into the VMR.
+Examples:
 
-    Other examples of VMR tags:
+`IDPC_department_Navy_ANY`
 
-    "jobtitle_Sergeant": Only participants with rank of sergeant (jobtitle) are allow into the VMR
+Members of department 'Navy' allowed into VMR, classification changes on participant join: Lowest classification of all active participant set
 
-    "givenname_Jon": Only participants called Jon will be allowed into VMR - not real life but shows how different IDP claims can be used
+`IDPC_department_Navy_SECRET`
 
-4. Any other calls, i.e.: no service tag, are allowed to continue to prevent failures in demo environment. In production this would likely be set to reject call.
+Members of department 'Navy' & IDP classification 'SECRET' or higher (VMR theme) allowed into VMR
+
+`IDPC_ANY_ANY_SECRET`
+
+No test on idpAttr, IDP classification 'SECRET' or higher (VMR theme) allowed into VMR
+
+`IDPC_ANY_ANY_ANY`
+
+Any IDP authenticated user (VMR Setting) are allowed into VMR, classification changes on participant join: Lowest classification of all active participant set
