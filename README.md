@@ -6,7 +6,7 @@ Node.JS server to leverage Pexip Infinity APIs to provide features and functions
 
 Create code in modular method to enable swap of feature/functions easily via config file. Put re-usable modules into 'common' folder:
 
-![Code flow, top level](codeflowTop.png)
+![Code flow, top level](CodeFlowTop.png)
 
 ## Current supported APIs
 
