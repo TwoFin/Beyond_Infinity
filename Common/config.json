@@ -1,0 +1,3 @@
+{
+    "idpDisplayNameBuild" : ["idp_attribute_jobtitle", "idp_attribute_surname", "|", "idp_attribute_department"]
+}

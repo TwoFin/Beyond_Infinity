@@ -1,7 +1,5 @@
-// Imports & config
+// Imports
 const clientAPI = require("../Common/pexClientAPI.cjs");
-const displayNameBuild = require("../Common/displayNameBuild.cjs");
-
 const config = require("./config.json");
 
 // Set lists for IDP processing from configuration file
@@ -54,14 +52,17 @@ function vmrTreatment(tag_params, query, pol_response) {
   }
   // If action is continue build disply name and set up VMR monitor
   if (pol_response.action === "continue") {
-    // Build overlay text
-    let displayName = displayNameBuild(query)
-    pol_response.result = {
-      remote_display_name: displayName,
-    };
-    console.info("idpControl: Display name updated: ", pol_response.result.remote_display_name);
- 
-      // Set up VMR Monitor for classification
+    // If IDP attributes are present, build overlay text
+    if (query.idp_attribute_jobtitle && query.idp_attribute_surname && query.idp_attribute_department) {
+      pol_response.result = {
+        remote_display_name: query.idp_attribute_jobtitle + " " + query.idp_attribute_surname + " | " + query.idp_attribute_department,
+      };
+      console.info("idpControl: Display name updated: ", pol_response.result.remote_display_name);
+    } else {
+      console.warn("idpControl: Display name not updated due lack of idp attributes: ", query.idp_attribute_jobtitle, query.idp_attribute_surname, query.idp_attribute_department);
+    }
+
+    // Set up VMR Monitor for classification
     console.info("idpControl: Using ClientAPI to monitor VMR classification: ", query.service_name);
     clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
   }

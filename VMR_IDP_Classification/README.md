@@ -9,13 +9,15 @@
 
 2. VMR Classification level change based on participant entry/exit & IDP attribute 'clearance'
 
+## Code flow
+
 ![](CodeFlowIDP.png)
 
 ## Current Features and Functions Detailed
 
 ### Display name contsruction based on IDP attributes
 
-If the participant has IDP attibutes, display name (overlay text) is constructed from config file setting: displayNameBuild
+If the participant has IDP attibutes, display name (overlay text) is constructed from /Common config file setting: idpDisplayNameBuild
 
 ### VMR control based on service_tag & participants IDP attributes
 
@@ -24,6 +26,7 @@ VMR Service tag shall be contructed:
 `FeatureAbb_idpAttrTest_idpAttrValue_Class`
 
 Where:
+
 `FeatureAbb` - Future use to select different features modules  - default "IDPC" - if no match default server action continue/reject
 `idpAttrTest` - IDP attibute from user to test against idpAttrValue, entry to VMR if values match - default "ANY" - does not perform check
 `idpAttrValue` - Value to test againt users value of idpAttrTest - default "ANY" - does not perform check
