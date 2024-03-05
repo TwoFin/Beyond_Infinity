@@ -9,68 +9,39 @@ const idpAttrs = config.idpAttrs;
 const rankTop = config.rankTop;
 const rankCo = config.rankCo;
 
-function idpControl (tag_params, query, pol_response){ // do we really need pol_response?
-
-}
-
-function vmrTreatment(tag_params, query, pol_response) {
-  console.debug("idpControl: Query: ", query) // NOISY!
-  console.debug("idpControl: Recieved request for service_tag: ", tag_params, pol_response) 
-  // Check for known service_tag treatments
-  switch (true) {
-    // "AllDept" tag - continue
-    case tag_params[0] === "allDept": {
-      console.info("idpControl: allDept service_tag, default continue");
-      break;
-    }
-    // "rank" tag - entry condition based on rank lists from pexPolicyConfig
-    case tag_params[0] === "rank": {
-      if (tag_params[1] === "co" && rankCo.includes(query.idp_attribute_jobtitle)) {
-        // CO Memeber
-        console.info("idpControl: Participants idp jobtitle is on CO list OK");
-      } else if (tag_params[1] === "top" && rankTop.includes(query.idp_attribute_jobtitle)) {
-        // Top Member
-        console.info("idpControl: Participants idp jobtitle is on TOP list OK");
-      } else {
-        // Not in any rank list
-        console.warn("idpControl: Participants idp jobtitle NOT in any rank list, response:");
-        pol_response.action = "reject";
-        pol_response["result"] = {"reject_reason": "ACCESS DENIED You do not have the required rank" };
-      }
-      break;
-    }
-    // Entry condition based on idp attribute/value match from idpAttr list
-    case idpAttrs.includes(tag_params[0]): {
-      if (query["idp_attribute_" + tag_params[0]] === tag_params[1]) {
-        console.info("idpControl: Participants idp attribute matches service_tag OK");
-      } else {
-        console.warn("idpControl: Participants idp attribute does NOT match service_tag, response:");
-        pol_response.action = "reject";
-        pol_response["result"] = {"reject_reason": "ACCESS DENIED You are not in: " + tag_params[1] };
-      }
-      break;
-    }
-
-    // Default response
-    default: {
-      console.info("idpControl: service_tag does not match any treatments, default continue");
+function idpControl (tag_params, query, pol_response){
+  console.debug("idpControl: Recieved request for service_tag: ", tag_params);
+  
+  // Check if entry control by IDP attribute is required
+  if (tag_params[1] !== "ANY"){
+    console.info("idpControl: Processing VMR entry based on IDP Attr/Value: ", tag_params[1], tag_params[2] );
+    if (query["idp_attribute_" + tag_params[1]] === tag_params[2]) {
+      console.info("idpControl: Participants idp attribute matches service_tag OK");
+    } else {
+      console.warn("idpControl: Participants idp attribute does NOT match service_tag, response:");
+      pol_response.action = "reject";
+      pol_response["result"] = {"reject_reason": "ACCESS DENIED You are not member of: " + tag_params[2] };
     }
   }
-  // If action is continue build disply name and set up VMR monitor
+
+  // Check what classification level is required
+  console.info("idpControl:  VMR classification level is set to: ", tag_params[3]);
+  if (tag_params[3] === "ANY"){
+    // Set up VMR monitor and dynamicly change classification watermark
+  } else {
+    // Allow VMR entry based on participants clearance level - New Function
+  }
+
+  // If action is continue build disply name
   if (pol_response.action === "continue") {
-    // Build overlay text
     let displayName = displayNameBuild(query)
     pol_response.result = {
       remote_display_name: displayName,
     };
-    console.info("idpControl: Display name updated: ", pol_response.result.remote_display_name);
- 
-      // Set up VMR Monitor for classification
-    console.info("idpControl: Using ClientAPI to monitor VMR classification: ", query.service_name);
-    clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
   }
+  
   // Return resuling policy response
-  return pol_response;
+  return pol_response
 }
 
 module.exports = idpControl;
