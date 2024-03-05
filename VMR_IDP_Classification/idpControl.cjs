@@ -4,13 +4,17 @@ const displayNameBuild = require("../Common/displayNameBuild.cjs");
 
 const config = require("./config.json");
 
-// Set lists for IDP processing from configuration file
+// Set lists for IDP processing from configuration file - TOFO thiese may not be required with new service_tag method
 const idpAttrs = config.idpAttrs;
 const rankTop = config.rankTop;
 const rankCo = config.rankCo;
 
+function idpControl (tag_params, query, pol_response){ // do we really need pol_response?
+
+}
+
 function vmrTreatment(tag_params, query, pol_response) {
-  console.debug("idpControl: Query: ", query)
+  console.debug("idpControl: Query: ", query) // NOISY!
   console.debug("idpControl: Recieved request for service_tag: ", tag_params, pol_response) 
   // Check for known service_tag treatments
   switch (true) {
@@ -69,4 +73,4 @@ function vmrTreatment(tag_params, query, pol_response) {
   return pol_response;
 }
 
-module.exports = vmrTreatment;
+module.exports = idpControl;

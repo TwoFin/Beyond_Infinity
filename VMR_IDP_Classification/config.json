@@ -13,5 +13,10 @@
         "Squadron Leader",
         "Major",
         "Lieutenant"
-    ]
+    ],
+    "defaultResponse": {
+        "status": "success",
+        "action": "continue"
+      },
+    "featureModules" : ["IDPC"]
 }
