@@ -33,7 +33,7 @@ async function participantPropPol(query) {
   switch (true) {
     case query.protocol === "api": {
       if (tag_params[0] === "IDPC") {
-        pol_response = idpControl(tag_params, query, pol_response)
+        pol_response = await idpControl(tag_params, query, pol_response)
       }
       break;
     }

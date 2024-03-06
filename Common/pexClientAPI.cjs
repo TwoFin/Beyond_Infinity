@@ -2,7 +2,7 @@
 // Handles Pexip Infinity ClientAPI (REST) requests
 const fetch = require("node-fetch");
 const eventSource = require("eventsource");
-const VmrMonitor = require("./vmrMonitorClass.cjs")
+const vmrMonitor = require("./vmrMonitorClass.cjs")
 
 // Pexip conference node & API ID details from ENV
 const pexnodeapi = "https://" + process.env.PEXIP_NODE + "/api/client/v2/conferences/";
@@ -130,20 +130,20 @@ async function vmrEventSource(monitoredVmr) {
   });
 }
 
-// Main monitor function called by participant policy on participant entry
+// Monitor function called by participant policy on participant entry to VMR with classification ANY
 async function monitorClassLevel(vmr, participant_uuid, classification) {
   try {
     // Check if VmeMonitor object already exists
     let monitoredVmr = activeVmrList.find((v) => v.vmrname === vmr);
     if (monitoredVmr) {
-      /// VmrMonitor instace already in active VMR list
+      /// vmrMonitor instance already in active VMR list
       console.info("CLIENT_API: VMR already monitored");
       monitoredVmr.addParticipant(participant_uuid, classification);
       checkClassLevel(monitoredVmr);
     } else {
-      /// Create VmrMonitor instace as not in active VMR list
+      /// Create vmrMonitor instace as not in active VMR list
       console.info("CLIENT_API: VMR not monitored, creating new instance");
-      let monitoredVmr = new VmrMonitor(vmr);
+      let monitoredVmr = new vmrMonitor(vmr);
       activeVmrList.push(monitoredVmr);
       await vmrEventSource(monitoredVmr);
       await getClassMap(monitoredVmr);
@@ -156,4 +156,15 @@ async function monitorClassLevel(vmr, participant_uuid, classification) {
   }
 }
 
-module.exports = { monitorClassLevel };
+// One time function to check if participant is cleared to enter VMR & set VMR watermark to service_tag param
+async function entryByClassLevel(vmr, vmrClass, partClass) {
+  let token = await newToken(vmr);
+  console.debug(vmr, vmrClass, partClass)
+  let data = await vmrGet(vmr, token, "/get_classification_level");
+  let classMap = data.result.levels;
+  // TODO Finish this off, temp return map for logging
+  releaseToken(vmr, token)
+  return classMap
+}
+
+module.exports = { monitorClassLevel, entryByClassLevel };
