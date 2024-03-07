@@ -7,7 +7,7 @@ const displayNameBuild = require("../Common/displayNameBuild.cjs");
 const config = require("./config.json");
 
 async function idpControl(tag_params, query, pol_response) {
-  console.info("idpControl: Recieved request for service_tag: ", tag_params);
+  console.info("idpControl: Recieved request for |name: ", query.service_name, "|tag params:", tag_params);
 
   // Check if entry control by IDP attribute is required
   console.info("idpControl: Processing VMR entry based on IDP Attr/Value: ", tag_params[1], tag_params[2]);
@@ -23,13 +23,14 @@ async function idpControl(tag_params, query, pol_response) {
 
   // Check if classification level is required
   console.info("idpControl: VMR classification level is:", tag_params[3]);
-  console.info("idpControl: Participant classification level is:", query.idp_attribute_clearance);
-  if (tag_params[3] !== "ANY") {
+  if (tag_params[3] !== "ANY" && pol_response.action === "continue") {
     // Allow VMR entry based on participants clearance level
+    console.info("idpControl: Participant classification level is:", query.idp_attribute_clearance);
     partLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == query.idp_attribute_clearance));
     vmrLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == tag_params[3]));
-    if (partLevel < vmrLevel) {
-      console.warn("idpControl: Participant does not have clearance for this VMR:", query.idp_attribute_clearance);
+    console.info("idpControl: |Participant level:", partLevel, "|VMR Level:", vmrLevel )
+    if (partLevel < vmrLevel || isNaN(partLevel)) {
+      console.warn("idpControl: Participant does not have clearance for this VMR with:", query.idp_attribute_clearance);
       pol_response.action = "reject";
       pol_response["result"] = { "reject_reason": "ACCESS DENIED. You do not have the required clearance" };
     }
@@ -42,7 +43,7 @@ async function idpControl(tag_params, query, pol_response) {
       remote_display_name: displayName,
     };
     if (tag_params[3] === "ANY") {
-      console.info("idpControl: Using ClientAPI to monitor VMR: ", query.service_name);
+      console.info("idpControl: Setting up vmr monitor: ", query.service_name);
       clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
     }
   }

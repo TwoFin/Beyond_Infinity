@@ -18,15 +18,17 @@ async function participantPropPol(query) {
     console.info("PARTICIPANT_POL: ClientAPI bypass");
     return pol_response;
   }
+
+  // Log request
+  console.info("PARTICIPANT_POL: |name:",query.service_name, "|protocol:", query.protocol, "|service_tag:", query.service_tag);
   
   // Deliminate VMR service_tag by "_"
-  console.info("PARTICIPANT_POL: service_tag: ", query.service_tag);
   const tag_params = query.service_tag.split("_");
   
   // Process request based on protocol
-  console.info("PARTICIPANT_POL: protocol: ", query.protocol);
   switch (true) {
     case query.protocol === "api": {
+      // Send to idpControl if IDPC in tag, else do nothing
       if (tag_params[0] === "IDPC") {
         pol_response = await idpControl(tag_params, query, pol_response)
       }

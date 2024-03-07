@@ -94,7 +94,6 @@ async function checkClassLevel(monitoredVmr) {
 
 // VMR EventSource (SSE) used to monitor VMR and manage token - TODO make this part of vmrMonitor
 async function vmrEventSource(monitoredVmr) {
-  console.info("CLIENT_API: Setting up eventSource to monitor:", monitoredVmr.vmrname);
   // Get token and write back to monitoredVmr
   let token = await newToken(monitoredVmr.vmrname);
   monitoredVmr.token = token;
@@ -128,7 +127,6 @@ async function vmrEventSource(monitoredVmr) {
       // Check if classificaton level needs to change
       checkClassLevel(monitoredVmr);
     }
-    console.debug("DEBUG: Monitored VMRs:", activeVmrList)
   });
 }
 
