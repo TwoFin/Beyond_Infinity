@@ -1,72 +1,55 @@
-// Imports
+// idpContol.cjs
+//  Controls VMR entry based on participants IDP settings & VMR service_tag
+
+// Imports & config
 const clientAPI = require("../Common/pexClientAPI.cjs");
+const displayNameBuild = require("../Common/displayNameBuild.cjs");
 const config = require("./config.json");
 
-// Set lists for IDP processing from configuration file
-const idpAttrs = config.idpAttrs;
-const rankTop = config.rankTop;
-const rankCo = config.rankCo;
+async function idpControl(tag_params, query, pol_response) {
+  console.info("idpControl: Recieved request for |name: ", query.service_name, "|tag params:", tag_params);
 
-function vmrTreatment(tag_params, query, pol_response) {
-console.debug("idpControl: Recieved request for service_tag: ", tag_params, pol_response) 
-  // Check for known service_tag treatments
-  switch (true) {
-    // "AllDept" tag - continue
-    case tag_params[0] === "allDept": {
-      console.info("idpControl: allDept service_tag, default continue");
-      break;
-    }
-    // "rank" tag - entry condition based on rank lists from pexPolicyConfig
-    case tag_params[0] === "rank": {
-      if (tag_params[1] === "co" && rankCo.includes(query.idp_attribute_jobtitle)) {
-        // CO Memeber
-        console.info("idpControl: Participants idp jobtitle is on CO list OK");
-      } else if (tag_params[1] === "top" && rankTop.includes(query.idp_attribute_jobtitle)) {
-        // Top Member
-        console.info("idpControl: Participants idp jobtitle is on TOP list OK");
-      } else {
-        // Not in any rank list
-        console.warn("idpControl: Participants idp jobtitle NOT in any rank list, response:");
-        pol_response.action = "reject";
-        pol_response["result"] = {"reject_reason": "ACCESS DENIED You do not have the required rank" };
-      }
-      break;
-    }
-    // Entry condition based on idp attribute/value match from idpAttr list
-    case idpAttrs.includes(tag_params[0]): {
-      if (query["idp_attribute_" + tag_params[0]] === tag_params[1]) {
-        console.info("idpControl: Participants idp attribute matches service_tag OK");
-      } else {
-        console.warn("idpControl: Participants idp attribute does NOT match service_tag, response:");
-        pol_response.action = "reject";
-        pol_response["result"] = {"reject_reason": "ACCESS DENIED You are not in: " + tag_params[1] };
-      }
-      break;
-    }
-
-    // Default response
-    default: {
-      console.info("idpControl: service_tag does not match any treatments, default continue");
-    }
-  }
-  // If action is continue build disply name and set up VMR monitor
-  if (pol_response.action === "continue") {
-    // If IDP attributes are present, build overlay text
-    if (query.idp_attribute_jobtitle && query.idp_attribute_surname && query.idp_attribute_department) {
-      pol_response.result = {
-        remote_display_name: query.idp_attribute_jobtitle + " " + query.idp_attribute_surname + " | " + query.idp_attribute_department,
-      };
-      console.info("idpControl: Display name updated: ", pol_response.result.remote_display_name);
+  // Check if entry control by IDP attribute is required
+  console.info("idpControl: Processing VMR entry based on IDP Attr/Value: ", tag_params[1], tag_params[2]);
+  if (tag_params[1] !== "ANY") {    
+    if (query["idp_attribute_" + tag_params[1]] === tag_params[2]) {
+      console.info("idpControl: Participants idp attribute matches service_tag OK");
     } else {
-      console.warn("idpControl: Display name not updated due lack of idp attributes: ", query.idp_attribute_jobtitle, query.idp_attribute_surname, query.idp_attribute_department);
+      console.warn("idpControl: Participants idp attribute does NOT match service_tag");
+      pol_response.action = "reject";
+      pol_response["result"] = { "reject_reason": "ACCESS DENIED. You are not a member of: " + tag_params[2] };
     }
-
-    // Set up VMR Monitor for classification
-    console.info("idpControl: Using ClientAPI to monitor VMR classification: ", query.service_name);
-    clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
   }
+
+  // Check if classification level is required
+  console.info("idpControl: VMR classification level is:", tag_params[3]);
+  if (tag_params[3] !== "ANY" && pol_response.action === "continue") {
+    // Allow VMR entry based on participants clearance level
+    console.info("idpControl: Participant classification level is:", query.idp_attribute_clearance);
+    partLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == query.idp_attribute_clearance));
+    vmrLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == tag_params[3]));
+    console.info("idpControl: |Participant level:", partLevel, "|VMR level:", vmrLevel )
+    if (partLevel < vmrLevel || isNaN(partLevel)) {
+      console.warn("idpControl: Participant does not have clearance for this VMR with:", query.idp_attribute_clearance);
+      pol_response.action = "reject";
+      pol_response["result"] = { "reject_reason": "ACCESS DENIED. You do not have the required clearance" };
+    }
+  }
+
+  // If action is continue build disply name. If classification level is ANY, set up vmrMonitor for dynamic watermark
+  if (pol_response.action === "continue") {
+    let displayName = displayNameBuild(query)
+    pol_response.result = {
+      remote_display_name: displayName,
+    };
+    if (tag_params[3] === "ANY") {
+      console.info("idpControl: Setting up vmr monitor: ", query.service_name);
+      clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
+    }
+  }
+
   // Return resuling policy response
-  return pol_response;
+  return pol_response
 }
 
-module.exports = vmrTreatment;
+module.exports = idpControl;

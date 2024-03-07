@@ -1,15 +1,17 @@
 // pexClientAPI.cjs
 // Handles Pexip Infinity ClientAPI (REST) requests
+
 const fetch = require("node-fetch");
 const eventSource = require("eventsource");
-const VmrMonitor = require("./vmrMonitorClass.cjs")
+const vmrMonitor = require("./vmrMonitor.cjs")
+const config = require("./config.json");
 
 // Pexip conference node & API ID details from ENV
 const pexnodeapi = "https://" + process.env.PEXIP_NODE + "/api/client/v2/conferences/";
 const clientapiID = { display_name: process.env.PEXIP_CLIENTAPI_NAME, call_tag: process.env.PEXIP_CLIENTAPI_TAG };
 
 // Global list of monitored/active VMRs
-let activeVmrList = [];
+let activeVmrList = []; // TODO Move to vmrMonitor
 
 // Low Level Pexip ClientAPI functions
 async function newToken(vmr) {
@@ -19,7 +21,7 @@ async function newToken(vmr) {
     headers: { "Content-Type": "application/json" },
   });
   const data = await response.json();
-  if (response.status !== 200){console.warn("CLIENT_API:newToken: Recieved non 200 from ClientAPI:", response.status)};
+  if (response.status !== 200) { console.warn("CLIENT_API:newToken: Recieved non 200 from ClientAPI:", response.status) };
   return data.result.token;
 }
 
@@ -29,7 +31,7 @@ async function refreshToken(vmr, token) {
     headers: { token: token },
   });
   const data = await response.json();
-  if (response.status !== 200){console.warn("CLIENT_API:refreshToken: Recieved non 200 from ClientAPI:", response.status)};
+  if (response.status !== 200) { console.warn("CLIENT_API:refreshToken: Recieved non 200 from ClientAPI:", response.status) };
   return data.result.token;
 }
 
@@ -39,7 +41,7 @@ async function releaseToken(vmr, token) {
     headers: { token: token },
   });
   let data = await response.json();
-  if (response.status !== 200){console.warn("CLIENT_API:releaseToken: Recieved non 200 from ClientAPI:", response.status)};
+  if (response.status !== 200) { console.warn("CLIENT_API:releaseToken: Recieved non 200 from ClientAPI:", response.status) };
   return data;
 }
 
@@ -48,7 +50,7 @@ async function vmrGet(vmr, token, path) {
     headers: { token: token },
   });
   let data = await response.json();
-  if (response.status !== 200){console.warn("CLIENT_API:vmrGet: Recieved non 200 from ClientAPI:", response.status)};
+  if (response.status !== 200) { console.warn("CLIENT_API:vmrGet: Recieved non 200 from ClientAPI:", response.status) };
   return data;
 }
 
@@ -59,7 +61,7 @@ async function vmrPost(vmr, token, path, json) {
     headers: { "Content-Type": "application/json", token: token },
   });
   let data = await response.json();
-  if (response.status !== 200){console.warn("CLIENT_API:vmrPost: Recieved non 200 from ClientAPI:", response.status)};
+  if (response.status !== 200) { console.warn("CLIENT_API:vmrPost: Recieved non 200 from ClientAPI:", response.status) };
   return data;
 }
 
@@ -70,14 +72,14 @@ async function changeClassLevel(vmr, token, level) {
   return data;
 }
 
-// Simple function to get VMR object classfiication map and default level
+// Simple function to get VMR object classfiication map and default level - TODO change input to vmrname, token
 async function getClassMap(monitoredVmr) {
   let data = await vmrGet(monitoredVmr.vmrname, monitoredVmr.token, "/get_classification_level");
   monitoredVmr.classMap = data.result.levels;
   monitoredVmr.currentClassLevel = data.result.current;
 }
 
-// Check all participants in VMR and change classification to lowest level - used after participat entry/exit
+// Check all participants in VMR and change classification to lowest level - used after participat entry/exit - TODO make this part of vmrMonitor
 async function checkClassLevel(monitoredVmr) {
   console.info("CLIENT_API: Checking classificaton level for:", monitoredVmr.vmrname);
   let lowLevel = Math.min(...monitoredVmr.participantList.map((p) => p.level));
@@ -90,9 +92,8 @@ async function checkClassLevel(monitoredVmr) {
   }
 }
 
-// VMR EventSource (SSE) used to monitor VMR and manage token
+// VMR EventSource (SSE) used to monitor VMR and manage token - TODO make this part of vmrMonitor
 async function vmrEventSource(monitoredVmr) {
-  console.info("CLIENT_API: Setting up eventSource to monitor:", monitoredVmr.vmrname);
   // Get token and write back to monitoredVmr
   let token = await newToken(monitoredVmr.vmrname);
   monitoredVmr.token = token;
@@ -126,34 +127,33 @@ async function vmrEventSource(monitoredVmr) {
       // Check if classificaton level needs to change
       checkClassLevel(monitoredVmr);
     }
-    console.debug("DEBUG: Monitored VMRs:", activeVmrList)
   });
 }
 
-// Main monitor function called by participant policy on participant entry
+// Monitor function called by participant policy on participant entry to VMR with classification ANY - TODO make this part of vmrMonitor
 async function monitorClassLevel(vmr, participant_uuid, classification) {
   try {
     // Check if VmeMonitor object already exists
     let monitoredVmr = activeVmrList.find((v) => v.vmrname === vmr);
     if (monitoredVmr) {
-      /// VmrMonitor instace already in active VMR list
+      /// vmrMonitor instance already in active VMR list
       console.info("CLIENT_API: VMR already monitored");
       monitoredVmr.addParticipant(participant_uuid, classification);
       checkClassLevel(monitoredVmr);
     } else {
-      /// Create VmrMonitor instace as not in active VMR list
+      /// Create vmrMonitor instace as not in active VMR list
       console.info("CLIENT_API: VMR not monitored, creating new instance");
-      let monitoredVmr = new VmrMonitor(vmr);
+      let monitoredVmr = new vmrMonitor(vmr);
       activeVmrList.push(monitoredVmr);
       await vmrEventSource(monitoredVmr);
       await getClassMap(monitoredVmr);
       monitoredVmr.addParticipant(participant_uuid, classification);
       checkClassLevel(monitoredVmr);
     }
-    console.debug("DEBUG: Monitored VMRs:", activeVmrList)
+    console.debug("CLIENT_API: DEBUG: Monitored VMRs:", activeVmrList)
   } catch (error) {
     console.error("CLIENT_API:", error);
   }
 }
 
-module.exports = { monitorClassLevel };
+module.exports = { monitorClassLevel};

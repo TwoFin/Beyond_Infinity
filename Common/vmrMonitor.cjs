@@ -1,4 +1,6 @@
-// VMR Object class (monitoredVmr) to represent monitored/active VMR
+// vmrMonitor.cjs
+// VMR class and functions to monitor active VMRs and dynamiclly change on participant entry/exit
+
 class VmrMonitor {
     constructor(vmr) {
       this.vmrname = vmr;
@@ -13,6 +15,8 @@ class VmrMonitor {
       if (classification){
         level = Number(Object.keys(this.classMap).find((e) => this.classMap[e] == classification));
       }
+      // Set Level to 0 if no match on classification name
+      if(isNaN(level)){level = 0};
       // Add new participant to list
       this.participantList.push({ uuid: uuid, level: level });
     }
