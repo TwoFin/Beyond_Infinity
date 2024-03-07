@@ -13,8 +13,8 @@ async function idpControl(tag_params, query, pol_response) {
   console.info("idpControl: Recieved request for service_tag: ", tag_params);
 
   // Check if entry control by IDP attribute is required
-  if (tag_params[1] !== "ANY") {
-    console.info("idpControl: Processing VMR entry based on IDP Attr/Value: ", tag_params[1], tag_params[2]);
+  console.info("idpControl: Processing VMR entry based on IDP Attr/Value: ", tag_params[1], tag_params[2]);
+  if (tag_params[1] !== "ANY") {    
     if (query["idp_attribute_" + tag_params[1]] === tag_params[2]) {
       console.info("idpControl: Participants idp attribute matches service_tag OK");
     } else {
@@ -24,19 +24,21 @@ async function idpControl(tag_params, query, pol_response) {
     }
   }
 
-  // Check what classification level is required is not 'ANY' is service_tag
-  console.info("idpControl: VMR classification level is set to:", tag_params[3]);
+  // Check if classification level is required
+  console.info("idpControl: VMR classification level is:", tag_params[3]);
+  console.info("idpControl: Participant classification level is:", query.idp_attribute_clearance);
   if (tag_params[3] !== "ANY") {
     // Allow VMR entry based on participants clearance level
-    let action = await clientAPI.entryByClassLevel(query.service_name, tag_params[3], query.idp_attribute_clearance);    
-    if (action === "reject") {
-      console.warn("idpControl: Participant does not have clearance for this VMR: ", query.idp_attribute_clearance);
+    partLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == query.idp_attribute_clearance));
+    vmrLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == tag_params[3]));
+    if (partLevel < vmrLevel) {
+      console.warn("idpControl: Participant does not have clearance for this VMR:", query.idp_attribute_clearance);
       pol_response.action = "reject";
       pol_response["result"] = { "reject_reason": "ACCESS DENIED. You do not have the required clearance" };
     }
   }
 
-  // If action is continue build disply name & set up vmrMonitor is classification is ANY
+  // If action is continue build disply name. If classification level is ANY, set up vmrMonitor for dynamic watermark
   if (pol_response.action === "continue") {
     let displayName = displayNameBuild(query)
     pol_response.result = {

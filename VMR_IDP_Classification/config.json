@@ -18,5 +18,13 @@
         "status": "success",
         "action": "continue"
       },
-    "featureModules" : ["IDPC"]
+    "featureModules" : ["IDPC"],
+
+    "classificationLevels": {
+        "0": "UNOFFICIAL",
+        "1": "OFFICIAL",
+        "2": "PROTECTED",
+        "3": "SECRET",
+        "4": "TOP SECRET"
+    }
 }

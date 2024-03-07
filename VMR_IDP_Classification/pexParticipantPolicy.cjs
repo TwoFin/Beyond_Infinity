@@ -23,8 +23,8 @@ async function participantPropPol(query) {
     console.info("PARTICIPANT_POL: ClientAPI bypass");
     return pol_response;
   }
-
-  // Deliminate VMR service_tag by "_"
+  
+// Deliminate VMR service_tag by "_"
   console.info("PARTICIPANT_POL: service_tag: ", query.service_tag);
   const tag_params = query.service_tag.split("_");
   

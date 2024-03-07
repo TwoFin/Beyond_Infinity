@@ -157,21 +157,4 @@ async function monitorClassLevel(vmr, participant_uuid, classification) {
   }
 }
 
-// One time function to check if participant is cleared to enter VMR, if allowed set watermark to relevant level - TODO make this part of Control
-async function entryByClassLevel(vmr, vmrClass, partClass) {
-  partLevel = Number(Object.keys(config.entryClassificationLevels).find((e) => config.entryClassificationLevels[e] == partClass));
-  vmrLevel = Number(Object.keys(config.entryClassificationLevels).find((e) => config.entryClassificationLevels[e] == vmrClass));
-  console.info("CLIENT_API: Participant level:", partLevel, " VMR Level:", vmrLevel)
-  if (partLevel >= vmrLevel) {
-    // setTimeout(() =>{
-    //   let token = newToken(vmr);
-    //   changeClassLevel(vmr, token, vmrLevel);
-    //   releaseToken(vmr, token);
-    // }, 500) // Delay to insure first participant is in
-    return "continue";
-  } else {
-    return "reject"
-  }
-}
-
-module.exports = { monitorClassLevel, entryByClassLevel };
+module.exports = { monitorClassLevel};
