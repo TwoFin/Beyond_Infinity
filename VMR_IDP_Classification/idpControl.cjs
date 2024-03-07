@@ -10,8 +10,6 @@ const rankTop = config.rankTop;
 const rankCo = config.rankCo;
 
 async function idpControl(tag_params, query, pol_response) {
-  console.debug("idpControl: Query: ", query)
-  
   console.info("idpControl: Recieved request for service_tag: ", tag_params);
 
   // Check if entry control by IDP attribute is required
@@ -26,13 +24,11 @@ async function idpControl(tag_params, query, pol_response) {
     }
   }
 
-  // Check what classification level is required
-  console.info("idpControl:  VMR classification level is set to: ", tag_params[3]);
+  // Check what classification level is required is not 'ANY' is service_tag
+  console.info("idpControl: VMR classification level is set to:", tag_params[3]);
   if (tag_params[3] !== "ANY") {
     // Allow VMR entry based on participants clearance level
-    let action = await clientAPI.entryByClassLevel(query.service_name, tag_params[3], query.idp_attribute_clearance);
-    // ?? TODO - not getting class map from Client API correctly - mat be issue with VMR name
-    console.debug("idpControl: TEMP", action) // TODO temp output classMap - need to finish clientAPI.entryByClassLevel
+    let action = await clientAPI.entryByClassLevel(query.service_name, tag_params[3], query.idp_attribute_clearance);    
     if (action === "reject") {
       console.warn("idpControl: Participant does not have clearance for this VMR: ", query.idp_attribute_clearance);
       pol_response.action = "reject";

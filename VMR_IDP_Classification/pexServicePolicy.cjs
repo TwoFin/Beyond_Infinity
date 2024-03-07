@@ -16,7 +16,7 @@ const pol_continue = {
 };
 
 async function serviceConfigPol(query) {
-  // Copy default responses in local scope - prevents old data from previous function call
+    // Copy default responses in local scope - prevents old data from previous function call
   const pol_response = Object.assign({}, pol_continue);
   // ClientAPI bypass sets host IDP to null 
   if (query.remote_alias === clientapi_name && query.call_tag === clientapi_tag) {

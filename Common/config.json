@@ -1,3 +1,10 @@
 {
-    "idpDisplayNameBuild" : ["idp_attribute_jobtitle", "idp_attribute_surname", "|", "idp_attribute_department"]
+    "idpDisplayNameBuild" : ["idp_attribute_jobtitle", "idp_attribute_surname", "|", "idp_attribute_department"],
+    "entryClassificationLevels": {
+        "0": "UNOFFICIAL",
+        "1": "OFFICIAL",
+        "2": "PROTECTED",
+        "3": "SECRET",
+        "4": "TOP SECRET"
+    }
 }
