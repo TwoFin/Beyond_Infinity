@@ -1,8 +1,9 @@
 // pexClientAPI.cjs
 // Handles Pexip Infinity ClientAPI (REST) requests
+
 const fetch = require("node-fetch");
 const eventSource = require("eventsource");
-const vmrMonitor = require("./vmrMonitorClass.cjs")
+const vmrMonitor = require("./vmrMonitor.cjs")
 const config = require("./config.json");
 
 // Pexip conference node & API ID details from ENV
@@ -10,7 +11,7 @@ const pexnodeapi = "https://" + process.env.PEXIP_NODE + "/api/client/v2/confere
 const clientapiID = { display_name: process.env.PEXIP_CLIENTAPI_NAME, call_tag: process.env.PEXIP_CLIENTAPI_TAG };
 
 // Global list of monitored/active VMRs
-let activeVmrList = [];
+let activeVmrList = []; // TODO Move to vmrMonitor
 
 // Low Level Pexip ClientAPI functions
 async function newToken(vmr) {
@@ -78,7 +79,7 @@ async function getClassMap(monitoredVmr) {
   monitoredVmr.currentClassLevel = data.result.current;
 }
 
-// Check all participants in VMR and change classification to lowest level - used after participat entry/exit - TODO make this part of vmrMonitor class
+// Check all participants in VMR and change classification to lowest level - used after participat entry/exit - TODO make this part of vmrMonitor
 async function checkClassLevel(monitoredVmr) {
   console.info("CLIENT_API: Checking classificaton level for:", monitoredVmr.vmrname);
   let lowLevel = Math.min(...monitoredVmr.participantList.map((p) => p.level));
@@ -91,7 +92,7 @@ async function checkClassLevel(monitoredVmr) {
   }
 }
 
-// VMR EventSource (SSE) used to monitor VMR and manage token - TODO make this part of vmrMonitor class
+// VMR EventSource (SSE) used to monitor VMR and manage token - TODO make this part of vmrMonitor
 async function vmrEventSource(monitoredVmr) {
   console.info("CLIENT_API: Setting up eventSource to monitor:", monitoredVmr.vmrname);
   // Get token and write back to monitoredVmr
@@ -131,7 +132,7 @@ async function vmrEventSource(monitoredVmr) {
   });
 }
 
-// Monitor function called by participant policy on participant entry to VMR with classification ANY - TODO make this part of vmrMonitor class
+// Monitor function called by participant policy on participant entry to VMR with classification ANY - TODO make this part of vmrMonitor
 async function monitorClassLevel(vmr, participant_uuid, classification) {
   try {
     // Check if VmeMonitor object already exists

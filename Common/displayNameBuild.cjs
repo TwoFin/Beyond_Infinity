@@ -1,3 +1,6 @@
+// displayNameBuild.cjs
+// Builds display name from participant IDP attributes
+
 // Imports & config
 const config = require("./config.json");
 const idpDisplayNameBuild = config.idpDisplayNameBuild;

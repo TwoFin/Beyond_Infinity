@@ -1,13 +1,10 @@
+// idpContol.cjs
+//  Controls VMR entry based on participants IDP settings & VMR service_tag
+
 // Imports & config
 const clientAPI = require("../Common/pexClientAPI.cjs");
 const displayNameBuild = require("../Common/displayNameBuild.cjs");
-
 const config = require("./config.json");
-
-// Set lists for IDP processing from configuration file - TOFO thiese may not be required with new service_tag method
-const idpAttrs = config.idpAttrs;
-const rankTop = config.rankTop;
-const rankCo = config.rankCo;
 
 async function idpControl(tag_params, query, pol_response) {
   console.info("idpControl: Recieved request for service_tag: ", tag_params);

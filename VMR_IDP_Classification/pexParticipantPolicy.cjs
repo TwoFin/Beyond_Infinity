@@ -1,15 +1,10 @@
 // pexParticipant.cjs
-// Handles Pexip Infinity external policy 'Participant properties' requests
-// TODO - need to tidy up & abtract/simplify to remove dependency on lower level modules
+// Handles Pexip Infinity external policy 'participant/properties' requests
 
 // Imports, config & ENV
 const idpControl = require("./idpControl.cjs");
-const config = require("./config.json");
 const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
-// Set list of IDP attibutes & VMR service_tag(s) to treat - TODO consider using "idpControl_" in Infinity service_tag
-const idpAttrs = config.idpAttrs;
-const treatedVmrsTag = config.treatedVmrsTag;
 
 async function participantPropPol(query) {
   // set pol_response to default continue
@@ -24,7 +19,7 @@ async function participantPropPol(query) {
     return pol_response;
   }
   
-// Deliminate VMR service_tag by "_"
+  // Deliminate VMR service_tag by "_"
   console.info("PARTICIPANT_POL: service_tag: ", query.service_tag);
   const tag_params = query.service_tag.split("_");
   

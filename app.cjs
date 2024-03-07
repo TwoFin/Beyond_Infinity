@@ -1,8 +1,9 @@
-//app.js
+// app.js
+// Root entry point for https requests from Infinity
 const http = require("http");
 const url = require("url");
 
-// Load Policy code from paths in config 
+// Load policy modules from paths in config 
 const config = require("./config.json");
 const pexParticipantPolicy = require(config.pexParticipantPolicy);
 const pexServicePolicy = require(config.pexServicePolicy);

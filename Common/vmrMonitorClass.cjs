@@ -1,4 +1,6 @@
-// VMR Object class (monitoredVmr) to represent monitored/active VMR
+// vmrMonitor.cjs
+// VMR class and functions to monitor active VMRs and dynamiclly change on participant entry/exit
+
 class VmrMonitor {
     constructor(vmr) {
       this.vmrname = vmr;

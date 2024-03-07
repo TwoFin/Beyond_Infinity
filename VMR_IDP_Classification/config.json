@@ -1,25 +1,4 @@
 {   
-    "treatedVmrsTag" : ["allDept","rank"],
-
-    "idpAttrs": ["department", "jobtitle", "givenname", "surname", "clearance"],
-
-    "rankTop": ["Air Chief Marshal","General","Admiral"],
-
-    "rankCo": ["Air Chief Marshal",    
-    "General", 
-        "Admiral",
-        "Colonel",
-        "Captain",
-        "Squadron Leader",
-        "Major",
-        "Lieutenant"
-    ],
-    "defaultResponse": {
-        "status": "success",
-        "action": "continue"
-      },
-    "featureModules" : ["IDPC"],
-
     "classificationLevels": {
         "0": "UNOFFICIAL",
         "1": "OFFICIAL",
