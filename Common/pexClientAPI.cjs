@@ -150,7 +150,6 @@ async function monitorClassLevel(vmr, participant_uuid, classification) {
       monitoredVmr.addParticipant(participant_uuid, classification);
       checkClassLevel(monitoredVmr);
     }
-    console.debug("CLIENT_API: DEBUG: Monitored VMRs:", activeVmrList)
   } catch (error) {
     console.error("CLIENT_API:", error);
   }
