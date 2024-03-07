@@ -45,7 +45,7 @@ async function idpControl(tag_params, query, pol_response) {
       remote_display_name: displayName,
     };
     if (tag_params[3] === "ANY") {
-      console.info("idpControl: Using ClientAPI to monitor VMR classification for: ", query.service_name);
+      console.info("idpControl: Using ClientAPI to monitor VMR: ", query.service_name);
       clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
     }
   }

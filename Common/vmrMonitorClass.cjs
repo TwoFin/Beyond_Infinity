@@ -13,6 +13,8 @@ class VmrMonitor {
       if (classification){
         level = Number(Object.keys(this.classMap).find((e) => this.classMap[e] == classification));
       }
+      // Set Level to 0 if no match on classification name
+      if(isNaN(level)){level = 0};
       // Add new participant to list
       this.participantList.push({ uuid: uuid, level: level });
     }
