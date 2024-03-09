@@ -1,4 +1,16 @@
 {
-    "pexServicePolicy" : "./VMR_IDP_Classification/pexServicePolicy.cjs",
-    "pexParticipantPolicy" : "./VMR_IDP_Classification/pexParticipantPolicy.cjs"
+    "idpDisplayNameBuild": [
+        "idp_attribute_jobtitle",
+        "idp_attribute_surname",
+        "|",
+        "idp_attribute_department"
+    ],
+    
+    "classificationLevels": {
+        "0": "UNOFFICIAL",
+        "1": "OFFICIAL",
+        "2": "PROTECTED",
+        "3": "SECRET",
+        "4": "TOP SECRET"
+    }
 }

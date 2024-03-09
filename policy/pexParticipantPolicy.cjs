@@ -2,7 +2,7 @@
 // Handles Pexip Infinity external policy 'participant/properties' requests
 
 // Imports, config & ENV
-const idpControl = require("./idpControl.cjs");
+const idpControl = require("../idpControlledVMRs/idpControl.cjs");
 const clientapi_name = process.env.PEXIP_CLIENTAPI_NAME;
 const clientapi_tag = process.env.PEXIP_CLIENTAPI_TAG;
 
