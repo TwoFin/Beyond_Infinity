@@ -17,7 +17,7 @@ PEXIP_NODE - Conference node to send ClientAPI requests
 
 PEXIP_CLIENTAPI_TAG - call_tag to use for ClientAPI
 
-PEXIP_CLIENTAPI_NAME - display name to use, also checked for ClientAPI
+PEXIP_CLIENTAPI_NAME - display name to use for ClientAPI
 
 ## Current Features and Functions Overview
 
@@ -34,8 +34,11 @@ VMR Service tag shall be contructed:
 Where:
 
 `FeatureAbb` - Future use to select different features modules  - default "IDPC" - if no match default server action continue/reject
+
 `idpAttrTest` - IDP attibute from user to test against idpAttrValue, entry to VMR if values match - default "ANY" - does not perform check
+
 `idpAttrValue` - Value to test againt users value of idpAttrTest - default "ANY" - does not perform check
+
 `Class` - Minuimum classification in IDP attribute 'clearance' required to enter VMR - default "ANY" - classification is changed according to participants
 
 Examples:
