@@ -11,7 +11,7 @@ async function idpControl(tag_params, query, pol_response) {
 
   // Check if entry control by IDP attribute is required
   console.info("idpControl: Processing VMR entry based on IDP Attr/Value: ", tag_params[1], tag_params[2]);
-  if (tag_params[1] !== "ANY") {    
+  if (tag_params[1] !== "ANY") {
     if (query["idp_attribute_" + tag_params[1]] === tag_params[2]) {
       console.info("idpControl: Participants idp attribute matches service_tag OK");
     } else {
@@ -28,7 +28,7 @@ async function idpControl(tag_params, query, pol_response) {
     console.info("idpControl: Participant classification level is:", query.idp_attribute_clearance);
     partLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == query.idp_attribute_clearance));
     vmrLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == tag_params[3]));
-    console.info("idpControl: Participant level:", partLevel, ", VMR level:", vmrLevel )
+    console.info("idpControl: Participant level:", partLevel, ", VMR level:", vmrLevel)
     if (partLevel < vmrLevel || isNaN(partLevel)) {
       console.warn("idpControl: Participant does not have clearance for this VMR with:", query.idp_attribute_clearance);
       pol_response.action = "reject";
@@ -36,17 +36,16 @@ async function idpControl(tag_params, query, pol_response) {
     }
   }
 
-  // If action is continue build disply name. If classification level is ANY, set up vmrMonitor for dynamic watermark
+  // If action is continue build disply name set up vmrMonitor for dynamic watermark
   if (pol_response.action === "continue") {
     let displayName = displayNameBuild(query)
     pol_response.result = {
       remote_display_name: displayName,
     };
-    if (tag_params[3] === "ANY") {
-      console.info("idpControl: Setting up vmr monitor for: ", query.service_name);
-      monitorVmr(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
-    }
-  }
+    console.info("idpControl: Setting up vmr monitor for: ", query.service_name);
+    monitorVmr(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
+  };
+
 
   // Return resuling policy response
   return pol_response
