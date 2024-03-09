@@ -6,7 +6,7 @@ const fetch = require("node-fetch");
 const pexnodeapi = "https://" + process.env.PEXIP_NODE + "/api/client/v2/conferences/";
 const clientApiID = { display_name: process.env.PEXIP_CLIENTAPI_NAME, call_tag: process.env.PEXIP_CLIENTAPI_TAG };
 
-// Low Level Pexip ClientAPI functions
+// Token handles
 async function newToken(vmr) {
   const response = await fetch(pexnodeapi + vmr + "/request_token", {
     method: "post",
@@ -38,6 +38,7 @@ async function releaseToken(vmr, token) {
   return data;
 }
 
+// Low Level Pexip ClientAPI functions
 async function vmrGet(vmr, token, path) {
   let response = await fetch(pexnodeapi + vmr + path, {
     headers: { token: token },
@@ -70,3 +71,5 @@ async function changeClassLevel(vmr, token, level) {
   let data = await vmrPost(vmr, token, "/set_classification_level", json);
   return data;
 }
+
+module.exports = { newToken, refreshToken, releaseToken, getClassMap, changeClassLevel };

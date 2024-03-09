@@ -2,7 +2,7 @@
 // VMR class and functions to monitor active VMRs and dynamiclly change on participant entry/exit
 
 // Imports, config & ENV
-const clientAPI = require("../Common/pexClientAPI.cjs");
+const clientAPI = require("./pexClientAPI.cjs");
 const eventSource = require("eventsource");
 const pexnodeapi = "https://" + process.env.PEXIP_NODE + "/api/client/v2/conferences/";
 
@@ -105,13 +105,16 @@ async function monitorVmr(vmr, participant_uuid, classification) {
       let monitoredVmr = new vmrMonitor(vmr);
       activeVmrList.push(monitoredVmr);
       await vmrEventSource(monitoredVmr);
-      await clientAPI.getClassMap(monitoredVmr);
+      let classMap = await clientAPI.getClassMap(monitoredVmr.vmrname, monitoredVmr.token);
+      monitoredVmr.classMap = classMap.levels;
+      monitoredVmr.currentClassLevel = classMap.current;
       monitoredVmr.addParticipant(participant_uuid, classification);
       checkClassLevel(monitoredVmr);
     }
   } catch (error) {
     console.error("vmrMonitor:", error);
   }
+  console.debug("vmrMonitor: Current monitored VMRs", activeVmrList)
 }
 
-module.exports = { monitorVmr };
+module.exports = monitorVmr;
