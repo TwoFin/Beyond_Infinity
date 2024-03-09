@@ -5,8 +5,8 @@ const url = require("url");
 
 // Load policy modules from paths in config 
 const config = require("./config.json");
-const pexParticipantPolicy = require(config.pexParticipantPolicy);
-const pexServicePolicy = require(config.pexServicePolicy);
+const pexParticipantPolicy = require("./policy/pexParticipantPolicy.cjs");
+const pexServicePolicy = require("./policy/pexServicePolicy.cjs");
 
 const PORT = process.env.PORT || 5000;
 

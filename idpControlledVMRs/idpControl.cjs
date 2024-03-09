@@ -4,7 +4,7 @@
 // Imports & config
 const monitorVmr = require("../Common/vmrMonitor.cjs");
 const displayNameBuild = require("../Common/displayNameBuild.cjs");
-const config = require("./config.json");
+const config = require("../config.json");
 
 async function idpControl(tag_params, query, pol_response) {
   console.info("idpControl: Recieved request for vmr: ", query.service_name, ", tag params:", tag_params);
