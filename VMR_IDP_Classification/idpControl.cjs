@@ -2,7 +2,7 @@
 //  Controls VMR entry based on participants IDP settings & VMR service_tag
 
 // Imports & config
-const clientAPI = require("../Common/pexClientAPI.cjs");
+const monitorVmr = require("../Common/vmrMonitor.cjs");
 const displayNameBuild = require("../Common/displayNameBuild.cjs");
 const config = require("./config.json");
 
@@ -44,7 +44,7 @@ async function idpControl(tag_params, query, pol_response) {
     };
     if (tag_params[3] === "ANY") {
       console.info("idpControl: Setting up vmr monitor: ", query.service_name);
-      clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
+      monitorVmr(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
     }
   }
 

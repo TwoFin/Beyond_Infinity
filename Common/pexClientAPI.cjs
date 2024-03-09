@@ -58,7 +58,7 @@ async function vmrPost(vmr, token, path, json) {
   return data;
 }
 
-// Function to get VMR object classfiication map and default level
+// Function to get VMR classfiication map and current level
 async function getClassMap(vmr, token) {
   let data = await vmrGet(vmr, token, "/get_classification_level");
   return data.result;
