@@ -2,12 +2,12 @@
 //  Controls VMR entry based on participants IDP settings & VMR service_tag
 
 // Imports & config
-const clientAPI = require("../Common/pexClientAPI.cjs");
+const monitorVmr = require("../Common/vmrMonitor.cjs");
 const displayNameBuild = require("../Common/displayNameBuild.cjs");
 const config = require("./config.json");
 
 async function idpControl(tag_params, query, pol_response) {
-  console.info("idpControl: Recieved request for |name: ", query.service_name, "|tag params:", tag_params);
+  console.info("idpControl: Recieved request for vmr: ", query.service_name, ", tag params:", tag_params);
 
   // Check if entry control by IDP attribute is required
   console.info("idpControl: Processing VMR entry based on IDP Attr/Value: ", tag_params[1], tag_params[2]);
@@ -28,7 +28,7 @@ async function idpControl(tag_params, query, pol_response) {
     console.info("idpControl: Participant classification level is:", query.idp_attribute_clearance);
     partLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == query.idp_attribute_clearance));
     vmrLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == tag_params[3]));
-    console.info("idpControl: |Participant level:", partLevel, "|VMR level:", vmrLevel )
+    console.info("idpControl: Participant level:", partLevel, ", VMR level:", vmrLevel )
     if (partLevel < vmrLevel || isNaN(partLevel)) {
       console.warn("idpControl: Participant does not have clearance for this VMR with:", query.idp_attribute_clearance);
       pol_response.action = "reject";
@@ -43,8 +43,8 @@ async function idpControl(tag_params, query, pol_response) {
       remote_display_name: displayName,
     };
     if (tag_params[3] === "ANY") {
-      console.info("idpControl: Setting up vmr monitor: ", query.service_name);
-      clientAPI.monitorClassLevel(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
+      console.info("idpControl: Setting up vmr monitor for: ", query.service_name);
+      monitorVmr(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
     }
   }
 
