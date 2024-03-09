@@ -114,7 +114,6 @@ async function monitorVmr(vmr, participant_uuid, classification) {
   } catch (error) {
     console.error("vmrMonitor:", error);
   }
-  console.debug("vmrMonitor: Current monitored VMRs", activeVmrList)
 }
 
 module.exports = monitorVmr;

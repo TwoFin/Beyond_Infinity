@@ -7,7 +7,7 @@ const displayNameBuild = require("../Common/displayNameBuild.cjs");
 const config = require("./config.json");
 
 async function idpControl(tag_params, query, pol_response) {
-  console.info("idpControl: Recieved request for |name: ", query.service_name, "|tag params:", tag_params);
+  console.info("idpControl: Recieved request for vmr: ", query.service_name, ", tag params:", tag_params);
 
   // Check if entry control by IDP attribute is required
   console.info("idpControl: Processing VMR entry based on IDP Attr/Value: ", tag_params[1], tag_params[2]);

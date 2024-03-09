@@ -20,7 +20,7 @@ async function participantPropPol(query) {
   }
 
   // Log request
-  console.info("PARTICIPANT_POL: |name:",query.service_name, "|protocol:", query.protocol, "|service_tag:", query.service_tag);
+  console.info("PARTICIPANT_POL: vmr:",query.service_name, ", participant:", query.remote_display_name, ", protocol:", query.protocol, ", service_tag:", query.service_tag);
   
   // Deliminate VMR service_tag by "_"
   const tag_params = query.service_tag.split("_");
