@@ -28,7 +28,7 @@ async function idpControl(tag_params, query, pol_response) {
     console.info("idpControl: Participant classification level is:", query.idp_attribute_clearance);
     partLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == query.idp_attribute_clearance));
     vmrLevel = Number(Object.keys(config.classificationLevels).find((e) => config.classificationLevels[e] == tag_params[3]));
-    console.info("idpControl: |Participant level:", partLevel, "|VMR level:", vmrLevel )
+    console.info("idpControl: Participant level:", partLevel, ", VMR level:", vmrLevel )
     if (partLevel < vmrLevel || isNaN(partLevel)) {
       console.warn("idpControl: Participant does not have clearance for this VMR with:", query.idp_attribute_clearance);
       pol_response.action = "reject";
