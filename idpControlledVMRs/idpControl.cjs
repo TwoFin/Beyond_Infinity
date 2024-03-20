@@ -36,14 +36,17 @@ async function idpControl(tag_params, query, pol_response) {
     }
   }
 
-  // If action is continue build disply name set up vmrMonitor for dynamic watermark
+  // If action is continue build disply name
   if (pol_response.action === "continue") {
     let displayName = displayNameBuild(query)
     pol_response.result = {
       remote_display_name: displayName,
     };
     console.info("idpControl: Setting up vmr monitor for: ", query.service_name);
-    monitorVmr(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
+    // If callisifcation level is ANY, set up vmrMonitor for dynamic watermark
+    if (tag_params[3] === "ANY") {
+      monitorVmr(query.service_name, query.participant_uuid, query.idp_attribute_clearance);
+    }
   };
 
 
